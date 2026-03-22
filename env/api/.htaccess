@@ -1,0 +1,6 @@
+# Solo acceso a través de PHP (no directo a archivos de función)
+<Files "compile-css-fn.php">
+  Require all denied
+</Files>
+
+Options -Indexes

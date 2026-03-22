@@ -1,0 +1,9 @@
+# Configuración de usuarios (contraseñas)
+env/config/users.json
+
+# IDE / herramientas
+.claude/
+
+# Proyectos de trabajo (cada usuario crea los suyos)
+projects/*
+!projects/.gitkeep

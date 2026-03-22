@@ -1,0 +1,149 @@
+/* ============================================
+   Canvas Themes – Dark Theme (ambiente)
+   Solo estilos del ambiente de pruebas.
+   Las variables del proyecto se definen en su
+   propio CSS con html[data-theme="dark"].
+   ============================================ */
+
+[data-theme="dark"] {
+  --canvas-bg: #121212;
+  --canvas-white: #1E1E1E;
+  --canvas-text: #E0E0E0;
+  --canvas-text-light: #B0B0B0;
+  --canvas-text-muted: #777777;
+  --canvas-link: #4DA8DA;
+  --canvas-accent: #4DA8DA;
+  --canvas-border: #333333;
+  --canvas-primary-dark: #0F0F1A;
+}
+
+/* Barra Canvas */
+[data-theme="dark"] #global-nav {
+  background: var(--canvas-primary-dark);
+}
+
+/* Contenido */
+[data-theme="dark"] #content-area {
+  background: var(--canvas-bg);
+}
+
+[data-theme="dark"] #content-body {
+  color: var(--canvas-text);
+}
+
+[data-theme="dark"] .content-breadcrumb {
+  color: var(--canvas-text-muted);
+}
+
+[data-theme="dark"] .content-breadcrumb a {
+  color: var(--canvas-link);
+}
+
+/* Menú del curso */
+[data-theme="dark"] .course-name {
+  color: var(--canvas-text);
+}
+
+[data-theme="dark"] .course-item > a {
+  color: var(--canvas-text-light);
+}
+
+[data-theme="dark"] .course-item > a:hover {
+  color: var(--canvas-text);
+}
+
+[data-theme="dark"] .course-item.active > a {
+  color: var(--canvas-accent);
+}
+
+[data-theme="dark"] .course-nav-section-title {
+  color: var(--canvas-text-muted);
+}
+
+[data-theme="dark"] .course-back-btn {
+  color: var(--canvas-link);
+}
+
+[data-theme="dark"] .course-open-btn {
+  color: var(--canvas-text-light);
+}
+
+[data-theme="dark"] .course-open-btn:hover,
+[data-theme="dark"] .course-toggle:hover {
+  color: var(--canvas-text);
+}
+
+/* Status sidebar */
+[data-theme="dark"] .status-section h3 {
+  color: var(--canvas-text);
+}
+
+[data-theme="dark"] .status-item strong {
+  color: var(--canvas-text);
+}
+
+[data-theme="dark"] .status-item span {
+  color: var(--canvas-text-muted);
+}
+
+[data-theme="dark"] .status-item i,
+[data-theme="dark"] .todo-list i,
+[data-theme="dark"] .event-list i {
+  color: var(--canvas-accent);
+}
+
+[data-theme="dark"] .todo-list a,
+[data-theme="dark"] .event-list a {
+  color: var(--canvas-link);
+}
+
+[data-theme="dark"] .todo-list small,
+[data-theme="dark"] .event-list small {
+  color: var(--canvas-text-muted);
+}
+
+/* Placeholder */
+[data-theme="dark"] .placeholder-content {
+  color: var(--canvas-text-light);
+}
+
+[data-theme="dark"] .placeholder-content h2 {
+  color: var(--canvas-text);
+}
+
+/* Simulador móvil */
+[data-theme="dark"] #mobile-device {
+  background: var(--canvas-bg);
+  border-color: #555;
+}
+
+[data-theme="dark"] #mobile-content-area {
+  background: var(--canvas-bg);
+  color: var(--canvas-text);
+}
+
+[data-theme="dark"] .mobile-status-bar {
+  background: var(--canvas-white);
+  color: var(--canvas-text);
+}
+
+[data-theme="dark"] .mobile-bottom-nav {
+  background: var(--canvas-white);
+}
+
+[data-theme="dark"] .mobile-tab {
+  color: var(--canvas-text-muted);
+}
+
+[data-theme="dark"] .mobile-tab.active {
+  color: var(--canvas-accent);
+}
+
+/* Scrollbar */
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.15);
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255,255,255,0.25);
+}

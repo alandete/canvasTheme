@@ -1,0 +1,171 @@
+@charset "UTF-8";
+{{IMPORTS}}
+
+
+:root {
+
+  /* ── Colores primario y secundario (editar solo estos) ── */
+  --ct-primary-base: #0374B5;
+  --ct-secondary-base: #2D3B45;
+
+  /* ── Colores de acento (editar solo estos) ── */
+  --ct-accent-1-base: #E63946;
+  --ct-accent-2-base: #457B9D;
+  --ct-accent-3-base: #2B9348;
+
+  /* ── Colores de uso (heredan de los base) ── */
+  --ct-primary: var(--ct-primary-base);
+  --ct-secondary: var(--ct-secondary-base);
+  --ct-accent-1: var(--ct-accent-1-base);
+  --ct-accent-2: var(--ct-accent-2-base);
+  --ct-accent-3: var(--ct-accent-3-base);
+
+  /* ── Paleta de grises ── */
+  --ct-gray-000:  color-mix(in srgb, black 0%, white);
+  --ct-gray-050:  color-mix(in srgb, var(--ct-gray-1000) 3%, var(--ct-gray-000));
+  --ct-gray-100:  color-mix(in srgb, var(--ct-gray-1000) 5%, var(--ct-gray-000));
+  --ct-gray-200:  color-mix(in srgb, var(--ct-gray-1000) 12%, var(--ct-gray-000));
+  --ct-gray-300:  color-mix(in srgb, var(--ct-gray-1000) 20%, var(--ct-gray-000));
+  --ct-gray-400:  color-mix(in srgb, var(--ct-gray-1000) 35%, var(--ct-gray-000));
+  --ct-gray-500:  color-mix(in srgb, var(--ct-gray-1000) 50%, var(--ct-gray-000));
+  --ct-gray-600:  color-mix(in srgb, var(--ct-gray-1000) 65%, var(--ct-gray-000));
+  --ct-gray-700:  color-mix(in srgb, var(--ct-gray-1000) 75%, var(--ct-gray-000));
+  --ct-gray-800:  color-mix(in srgb, var(--ct-gray-1000) 85%, var(--ct-gray-000));
+  --ct-gray-900:  color-mix(in srgb, var(--ct-gray-1000) 95%, var(--ct-gray-000));
+  --ct-gray-1000: color-mix(in srgb, black 93%, white);
+
+  /* ── Canvas: enlaces y botones ── */
+  --ic-link-color: var(--ct-primary);
+  --ic-brand-button--primary-bgd: var(--ct-primary);
+  --ic-brand-button--primary-text: var(--ct-gray-000);
+  --ic-brand-button--secondary-bgd: var(--ct-secondary);
+  --ic-brand-button--secondary-text: var(--ct-gray-000);
+
+  /* ── Fondos ── */
+  --ct-bg-body: var(--ct-gray-000);
+  --ct-bg-card: var(--ct-gray-000);
+  --ct-bg-subtle: var(--ct-gray-050);
+  --ct-bg-muted: var(--ct-gray-100);
+
+  /* ── Bordes ── */
+  --ct-border-color: var(--ct-gray-300);
+  --ct-border-width: 1px;
+  --ct-border: var(--ct-border-width) solid var(--ct-border-color);
+
+  /* ── Border radius: sm=inputs | base=cards | lg=banners | full=pills ── */
+  --ct-radius-sm: 4px;
+  --ct-radius: 8px;
+  --ct-radius-lg: 16px;
+  --ct-radius-full: 9999px;
+
+  /* ── Espaciado ── */
+  --ct-space-xs: 4px;
+  --ct-space-sm: 8px;
+  --ct-space-md: 16px;
+  --ct-space-lg: 24px;
+  --ct-space-xl: 32px;
+  --ct-space-2xl: 48px;
+
+  /* ── Sombras cajas: proyección centro-inferior ── */
+  --ct-shadow-soft: 0 4px 6px -2px color-mix(in srgb, var(--ct-gray-1000) 10%, transparent);
+  --ct-shadow-hard: 0 8px 16px -4px color-mix(in srgb, var(--ct-gray-1000) 25%, transparent);
+
+  /* ── Sombras texto (text-shadow) ── */
+  --ct-text-glow: 0 1px 8px color-mix(in srgb, var(--ct-gray-1000) 40%, transparent);
+  --ct-text-outline: 0 1px 2px color-mix(in srgb, var(--ct-gray-1000) 70%, transparent), 0 0 4px color-mix(in srgb, var(--ct-gray-1000) 30%, transparent);
+
+  /* ── Sombra imágenes transparentes: filter: var(--ct-img-shadow) ── */
+  --ct-img-shadow: drop-shadow(0 4px 6px color-mix(in srgb, var(--ct-gray-1000) 25%, transparent));
+
+  /* ── Transiciones ── */
+  --ct-transition-fast: 0.15s ease;
+  --ct-transition: 0.25s ease;
+  --ct-transition-slow: 0.4s ease;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   DARK MODE — Canvas real (móvil + desktop)
+══════════════════════════════════════════════════════════════════════════ */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ct-primary: color-mix(in srgb, var(--ct-primary-base) 65%, white);
+    --ct-secondary: color-mix(in srgb, var(--ct-secondary-base) 50%, white);
+    --ct-accent-1: color-mix(in srgb, var(--ct-accent-1-base) 65%, white);
+    --ct-accent-2: color-mix(in srgb, var(--ct-accent-2-base) 65%, white);
+    --ct-accent-3: color-mix(in srgb, var(--ct-accent-3-base) 65%, white);
+
+    --ct-gray-000: color-mix(in srgb, white 10%, black);
+    --ct-gray-1000: color-mix(in srgb, white 88%, black);
+
+    --ct-shadow-soft: 0 4px 6px -2px color-mix(in srgb, var(--ct-gray-1000) 25%, transparent);
+    --ct-shadow-hard: 0 8px 16px -4px color-mix(in srgb, var(--ct-gray-1000) 50%, transparent);
+    --ct-text-glow: 0 1px 8px color-mix(in srgb, var(--ct-gray-1000) 60%, transparent);
+    --ct-text-outline: 0 1px 2px color-mix(in srgb, var(--ct-gray-1000) 90%, transparent), 0 0 4px color-mix(in srgb, var(--ct-gray-1000) 50%, transparent);
+    --ct-img-shadow: drop-shadow(0 4px 6px color-mix(in srgb, var(--ct-gray-1000) 50%, transparent));
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   DARK MODE — Ambiente de pruebas (Se elimina automáticamente al compilar)
+══════════════════════════════════════════════════════════════════════════ */
+html[data-theme="dark"] {
+  --ct-primary: color-mix(in srgb, var(--ct-primary-base) 65%, white);
+  --ct-secondary: color-mix(in srgb, var(--ct-secondary-base) 50%, white);
+  --ct-accent-1: color-mix(in srgb, var(--ct-accent-1-base) 65%, white);
+  --ct-accent-2: color-mix(in srgb, var(--ct-accent-2-base) 65%, white);
+  --ct-accent-3: color-mix(in srgb, var(--ct-accent-3-base) 65%, white);
+
+  --ct-gray-000: color-mix(in srgb, white 10%, black);
+  --ct-gray-1000: color-mix(in srgb, white 88%, black);
+
+  --ct-shadow-soft: 0 4px 6px -2px color-mix(in srgb, var(--ct-gray-1000) 25%, transparent);
+  --ct-shadow-hard: 0 8px 16px -4px color-mix(in srgb, var(--ct-gray-1000) 50%, transparent);
+  --ct-text-glow: 0 1px 8px color-mix(in srgb, var(--ct-gray-1000) 60%, transparent);
+  --ct-text-outline: 0 1px 2px color-mix(in srgb, var(--ct-gray-1000) 90%, transparent), 0 0 4px color-mix(in srgb, var(--ct-gray-1000) 50%, transparent);
+  --ct-img-shadow: drop-shadow(0 4px 6px color-mix(in srgb, var(--ct-gray-1000) 50%, transparent));
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   ESTILOS BASE HTML
+══════════════════════════════════════════════════════════════════════════ */
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+   TIPOGRAFIA
+   No modificamos font-family ni font-size base (Canvas los define).
+══════════════════════════════════════════════════════════════════════════ */
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+   CLASES GENERALES
+══════════════════════════════════════════════════════════════════════════ */
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+   LAYOUT
+══════════════════════════════════════════════════════════════════════════ */
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+   MODULOS / COMPONENTES
+══════════════════════════════════════════════════════════════════════════ */
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+   MEDIA QUERIES (mobile first)
+══════════════════════════════════════════════════════════════════════════ */
+
+/* Small devices (landscape phones, 576px and up) */
+@media (min-width: 576px) {}
+
+/* Medium devices (tablets, 768px and up) */
+@media (min-width: 768px) {}
+
+/* Large devices (desktops, 992px and up) */
+@media (min-width: 992px) {}
+
+/* X-Large devices (large desktops, 1200px and up) */
+@media (min-width: 1200px) {}
+
+/* XX-Large devices (larger desktops, 1400px and up) */
+@media (min-width: 1400px) {}

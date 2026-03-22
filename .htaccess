@@ -1,0 +1,18 @@
+# Redirigir al ambiente
+RewriteEngine On
+RewriteRule ^$ env/ [L,R=302]
+
+# Bloquear acceso directo a projects/
+<IfModule mod_rewrite.c>
+  RewriteRule ^projects/ - [F,L]
+</IfModule>
+
+# Deshabilitar directory listing
+Options -Indexes
+
+# Headers de seguridad
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
