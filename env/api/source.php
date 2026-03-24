@@ -41,7 +41,9 @@ $result = [
     'cssMaster'  => file_exists($masterFile)  ? file_get_contents($masterFile)  : '',
     'css'        => file_exists($mobileFile)  ? file_get_contents($mobileFile)  : '',
     'cssDesktop' => file_exists($desktopFile) ? file_get_contents($desktopFile) : '',
-    'js'         => file_exists($projectPath . '/js/scripts.js') ? file_get_contents($projectPath . '/js/scripts.js') : ''
+    'js'         => file_exists($projectPath . '/js/' . $project . '-scripts.js')
+                     ? file_get_contents($projectPath . '/js/' . $project . '-scripts.js')
+                     : (file_exists($projectPath . '/js/scripts.js') ? file_get_contents($projectPath . '/js/scripts.js') : '')
 ];
 
 echo json_encode($result, JSON_UNESCAPED_UNICODE);

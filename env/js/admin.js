@@ -6,12 +6,21 @@
   'use strict';
 
   // ── Tabs ──
+  var activeTab = document.querySelector('.admin-tab.active[data-tab]');
+  if (activeTab) {
+    document.querySelectorAll('.admin-panel').forEach(function (p) { p.classList.remove('active'); });
+    var panel = document.getElementById('panel-' + activeTab.dataset.tab);
+    if (panel) panel.classList.add('active');
+  }
+
   document.querySelectorAll('.admin-tab[data-tab]').forEach(function (tab) {
-    tab.addEventListener('click', function () {
+    tab.addEventListener('click', function (e) {
+      e.preventDefault();
       document.querySelectorAll('.admin-tab').forEach(function (t) { t.classList.remove('active'); });
       document.querySelectorAll('.admin-panel').forEach(function (p) { p.classList.remove('active'); });
       tab.classList.add('active');
       document.getElementById('panel-' + tab.dataset.tab).classList.add('active');
+      history.replaceState(null, '', tab.href || '/admin');
     });
   });
 
@@ -58,7 +67,7 @@
       btnCreateGuest.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creando...';
 
       try {
-        var resp = await fetch('api/create-guest.php', {
+        var resp = await fetch('/env/api/create-guest.php', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': window.CSRF_TOKEN },
           body: JSON.stringify({ username: username, password: password })
@@ -146,7 +155,7 @@
 
   async function loadProjects() {
     try {
-      var resp = await fetch('api/projects.php');
+      var resp = await fetch('/env/api/projects.php');
       var data = await resp.json();
       renderProjects(data.projects || []);
     } catch (e) {
@@ -247,7 +256,7 @@
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
 
     try {
-      var resp = await fetch('api/compile-css.php', {
+      var resp = await fetch('/env/api/compile-css.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': window.CSRF_TOKEN },
         body: JSON.stringify({ project: slug })
@@ -304,7 +313,7 @@
     btnSaveEdit.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
 
     try {
-      var resp = await fetch('api/edit-project.php', {
+      var resp = await fetch('/env/api/edit-project.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': window.CSRF_TOKEN },
         body: JSON.stringify({
@@ -404,7 +413,7 @@
     btnCreate.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creando...';
 
     try {
-      var resp = await fetch('api/create-project.php', {
+      var resp = await fetch('/env/api/create-project.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': window.CSRF_TOKEN },
         body: JSON.stringify({
@@ -463,7 +472,7 @@
     btnConfirmDelete.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Eliminando...';
 
     try {
-      var resp = await fetch('api/delete-project.php', {
+      var resp = await fetch('/env/api/delete-project.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': window.CSRF_TOKEN },
         body: JSON.stringify({ slug: pendingDeleteSlug })
@@ -506,7 +515,7 @@
       btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
 
       try {
-        var resp = await fetch('api/change-password.php', {
+        var resp = await fetch('/env/api/change-password.php', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': window.CSRF_TOKEN },
           body: JSON.stringify({ username: user, password: password })
@@ -552,7 +561,7 @@
       btnSaveEmail.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
 
       try {
-        var resp = await fetch('api/update-email.php', {
+        var resp = await fetch('/env/api/update-email.php', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': window.CSRF_TOKEN },
           body: JSON.stringify({ email: email })

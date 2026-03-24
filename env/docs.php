@@ -7,13 +7,13 @@
   <title>Canvas Themes – Documentación</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link rel="stylesheet" href="css/docs.css">
+  <link rel="stylesheet" href="/env/css/docs.css">
 </head>
 <body>
 
   <header class="docs-header">
     <div class="docs-header-left">
-      <a href="admin.php" class="back-link"><i class="fas fa-arrow-left"></i></a>
+      <a href="/admin" class="back-link"><i class="fas fa-arrow-left"></i></a>
       <h1><i class="fas fa-book"></i> Documentación Canvas LMS</h1>
     </div>
   </header>
@@ -667,7 +667,7 @@ html[data-theme="dark"] {
         <p>El admin puede cambiar las contraseñas de todos los usuarios desde <strong>Admin → Usuarios</strong>.</p>
 
         <h3>Recuperar acceso</h3>
-        <p>Si olvidaste tu contraseña, accede a <code>reset-password.php</code> desde el enlace en la página de login. Hay tres opciones:</p>
+        <p>Si olvidaste tu contraseña, accede a <a href="/admin/reset-password"><code>/admin/reset-password</code></a> desde el enlace en la página de login. Hay tres opciones:</p>
         <table class="docs-table">
           <thead>
             <tr><th>Opción</th><th>Qué hace</th><th>Proyectos</th></tr>
@@ -734,6 +734,6 @@ html[data-theme="dark"] {
     </main>
   </div>
 
-  <script src="js/docs.js"></script>
+  <script src="/env/js/docs.js"></script>
 </body>
 </html>

@@ -53,7 +53,7 @@ if (is_dir($projectPath)) {
 }
 
 // Create directories
-$dirs = [$projectPath, $projectPath . '/pages', $projectPath . '/css', $projectPath . '/js'];
+$dirs = [$projectPath, $projectPath . '/pages', $projectPath . '/css', $projectPath . '/js', $projectPath . '/img'];
 foreach ($dirs as $dir) {
     if (!mkdir($dir, 0755, true) && !is_dir($dir)) {
         http_response_code(500);
@@ -132,8 +132,11 @@ file_put_contents($projectPath . '/css/' . $slug . '-master.css', $masterContent
 include __DIR__ . '/compile-css-fn.php';
 compileCssFromMaster($projectPath, $slug);
 
+// Snippets
+file_put_contents($projectPath . '/snippets.html', tpl('snippets.html'));
+
 // JS
-file_put_contents($projectPath . '/js/scripts.js', tpl('js/scripts.js'));
+file_put_contents($projectPath . '/js/' . $slug . '-scripts.js', tpl('js/scripts.js', ['PROJECT_NAME' => $escName]));
 
 // Organization pages
 if ($orgType !== 'none' && $orgCount > 0) {

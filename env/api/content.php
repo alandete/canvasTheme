@@ -23,6 +23,8 @@ if (!$projectsBase || !is_dir($projectPath)) {
 
 if ($page === 'index') {
     $filePath = $projectPath . '/index.html';
+} elseif ($page === 'snippets') {
+    $filePath = $projectPath . '/snippets.html';
 } else {
     $filePath = $projectPath . '/pages/' . $page . '.html';
 }
@@ -34,18 +36,31 @@ if (!file_exists($filePath)) {
 }
 
 $html = file_get_contents($filePath);
-$basePath = '../projects/' . $project;
+$basePath = '/projects/' . $project;
 
+$masterFile  = $projectPath . '/css/' . $project . '-master.css';
 $mobileFile  = $projectPath . '/css/' . $project . '-mobile.css';
 $desktopFile = $projectPath . '/css/' . $project . '-desktop.css';
+
+// En el ambiente de pruebas se carga el master (tiene dark mode + todo)
+// Si no existe master, carga mobile + desktop
+if (file_exists($masterFile)) {
+    $cssPath = $basePath . '/css/' . basename($masterFile);
+    $cssDesktopPath = null;
+} else {
+    $cssPath = file_exists($mobileFile) ? $basePath . '/css/' . basename($mobileFile) : null;
+    $cssDesktopPath = file_exists($desktopFile) ? $basePath . '/css/' . basename($desktopFile) : null;
+}
 
 $result = [
     'html'           => $html,
     'project'        => $project,
     'page'           => $page,
-    'cssPath'        => file_exists($mobileFile)  ? $basePath . '/css/' . basename($mobileFile)  : null,
-    'cssDesktopPath' => file_exists($desktopFile)  ? $basePath . '/css/' . basename($desktopFile) : null,
-    'jsPath'         => file_exists($projectPath . '/js/scripts.js') ? $basePath . '/js/scripts.js' : null
+    'cssPath'        => $cssPath,
+    'cssDesktopPath' => $cssDesktopPath,
+    'jsPath'         => file_exists($projectPath . '/js/' . $project . '-scripts.js')
+                        ? $basePath . '/js/' . $project . '-scripts.js'
+                        : (file_exists($projectPath . '/js/scripts.js') ? $basePath . '/js/scripts.js' : null)
 ];
 
 echo json_encode($result, JSON_UNESCAPED_UNICODE);

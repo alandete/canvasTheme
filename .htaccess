@@ -1,10 +1,32 @@
-# Redirigir al ambiente
-RewriteEngine On
-RewriteRule ^$ env/ [L,R=302]
-
-# Bloquear acceso directo a projects/
 <IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # Permitir CSS, JS e imágenes de proyectos
+  RewriteRule ^projects/[a-z0-9\-]+/css/.+\.css$ - [L]
+  RewriteRule ^projects/[a-z0-9\-]+/js/.+\.js$ - [L]
+  RewriteRule ^projects/[a-z0-9\-]+/img/.+ - [L]
+
+  # Bloquear el resto de acceso directo a projects/
   RewriteRule ^projects/ - [F,L]
+  RewriteRule ^env/config/ - [F,L]
+
+  # URLs limpias - Admin
+  RewriteRule ^admin$ env/admin.php [L]
+  RewriteRule ^admin/users$ env/admin.php?tab=users [L]
+  RewriteRule ^admin/docs$ env/docs.php [L]
+  RewriteRule ^admin/reset-password$ env/reset-password.php [L]
+
+  # URLs limpias - Proyectos
+  RewriteRule ^project/([a-z0-9\-]+)$ env/index.php?project=$1 [L,QSA]
+
+  # Permitir acceso a archivos estáticos de env/
+  RewriteCond %{REQUEST_URI} ^/env/
+  RewriteCond %{REQUEST_FILENAME} -f
+  RewriteRule ^ - [L]
+
+  # Raíz redirige a env/
+  RewriteRule ^$ env/ [L,R=302]
 </IfModule>
 
 # Deshabilitar directory listing

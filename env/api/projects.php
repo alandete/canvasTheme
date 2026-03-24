@@ -50,6 +50,11 @@ if ($projectsDir && is_dir($projectsDir)) {
             $pages = array_merge($pages, $orgPages, $actPages);
         }
 
+        // Snippets al final (solo desktop)
+        if (file_exists($projPath . '/snippets.html')) {
+            $pages[] = ['slug' => 'snippets', 'name' => 'Snippets', 'file' => 'snippets.html'];
+        }
+
         // Detect CSS files
         $hasCss = file_exists($projPath . '/css/' . $slug . '-mobile.css')
                   || file_exists($projPath . '/css/' . $slug . '-master.css');
@@ -61,7 +66,7 @@ if ($projectsDir && is_dir($projectsDir)) {
             'pages'     => $pages,
             'hasCss'    => $hasCss,
             'hasMaster' => $hasMaster,
-            'hasJs'     => file_exists($projPath . '/js/scripts.js'),
+            'hasJs'     => file_exists($projPath . '/js/' . $slug . '-scripts.js') || file_exists($projPath . '/js/scripts.js'),
             'protected' => false
         ];
     }

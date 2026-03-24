@@ -1,4 +1,7 @@
-<?php require_once __DIR__ . '/auth.php'; requireAdmin(); setSecurityHeaders(); ?>
+<?php
+require_once __DIR__ . '/auth.php'; requireAdmin(); setSecurityHeaders();
+$activeTab = isset($_GET['tab']) ? $_GET['tab'] : 'projects';
+?>
 <!DOCTYPE html>
 <html lang="es" data-theme="light">
 <head>
@@ -7,19 +10,19 @@
   <title>Canvas Themes – Administración</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link rel="stylesheet" href="css/admin.css">
+  <link rel="stylesheet" href="/env/css/admin.css">
 </head>
 <body>
 
   <header class="admin-header">
     <div class="admin-header-left">
-      <a href="index.php" class="back-link"><i class="fas fa-arrow-left"></i></a>
+      <a href="/" class="back-link"><i class="fas fa-arrow-left"></i></a>
       <h1><i class="fas fa-cog"></i> Administración</h1>
     </div>
     <div class="admin-tabs">
-      <button class="admin-tab active" data-tab="projects"><i class="fas fa-folder-open"></i> Proyectos</button>
-      <button class="admin-tab" data-tab="users"><i class="fas fa-users"></i> Usuarios</button>
-      <a href="docs.php" class="admin-tab"><i class="fas fa-book-open"></i> Docs</a>
+      <a href="/admin" class="admin-tab<?= $activeTab === 'projects' ? ' active' : '' ?>" data-tab="projects"><i class="fas fa-folder-open"></i> Proyectos</a>
+      <a href="/admin/users" class="admin-tab<?= $activeTab === 'users' ? ' active' : '' ?>" data-tab="users"><i class="fas fa-users"></i> Usuarios</a>
+      <a href="/admin/docs" class="admin-tab"><i class="fas fa-book-open"></i> Docs</a>
     </div>
   </header>
 
@@ -243,7 +246,7 @@
 
       <!-- Link de recuperación -->
       <div class="recovery-link-info" style="margin-top: 16px;">
-        <small><i class="fas fa-link"></i> URL de recuperación: <code>reset-password.php</code></small>
+        <small><i class="fas fa-link"></i> URL de recuperación: <a href="/admin/reset-password"><code>/admin/reset-password</code></a></small>
       </div>
 
     </div>
@@ -293,6 +296,6 @@
   </div>
 
   <script>window.CSRF_TOKEN = '<?= generateCsrfToken() ?>';</script>
-  <script src="js/admin.js"></script>
+  <script src="/env/js/admin.js"></script>
 </body>
 </html>

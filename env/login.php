@@ -153,7 +153,7 @@ if (isLoggedIn()) {
       </div>
       <button type="submit" class="login-btn">Ingresar</button>
     </form>
-    <a href="reset-password.php" style="display:block;text-align:center;margin-top:16px;font-size:12px;color:#8B969E;">¿Olvidaste tu contraseña?</a>
+    <a href="/admin/reset-password" style="display:block;text-align:center;margin-top:16px;font-size:12px;color:#8B969E;">¿Olvidaste tu contraseña?</a>
   </div>
 </body>
 </html>

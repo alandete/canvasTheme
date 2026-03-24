@@ -16,7 +16,7 @@
   // navProjects removed - projects load automatically in course nav
 
   // Course Nav
-  const courseNav = document.getElementById('course-nav');
+  const courseNav = document.getElementById('left-side');
   const btnToggleCourse = document.getElementById('btn-toggle-course');
   const btnOpenCourse = document.getElementById('btn-open-course');
   const courseNameLabel = document.getElementById('course-name-label');
@@ -75,29 +75,45 @@
     tablet: { pw: 768, ph: 1024 }
   };
 
-  // ── Hash State Management ──
-  function updateHash() {
+  // ── State Management (clean URLs) ──
+  function updateState() {
     if (currentProject && currentPageSlug) {
-      var hash = 'project=' + encodeURIComponent(currentProject.slug) +
-                 '&page=' + encodeURIComponent(currentPageSlug);
-      history.replaceState(null, '', '#' + hash);
+      var url = '/project/' + encodeURIComponent(currentProject.slug);
+      if (currentPageSlug !== 'index') {
+        url += '#' + encodeURIComponent(currentPageSlug);
+      }
+      history.replaceState(null, '', url);
     }
   }
 
-  function readHash() {
+  function readState() {
+    // 1. Clean URL: /project/slug
+    var pathMatch = location.pathname.match(/^\/project\/([a-z0-9\-]+)$/);
+    if (pathMatch) {
+      var page = location.hash ? decodeURIComponent(location.hash.replace('#', '')) : 'index';
+      return { project: decodeURIComponent(pathMatch[1]), page: page };
+    }
+    // 2. Query param: ?project=slug
+    var qp = new URLSearchParams(location.search);
+    if (qp.get('project')) {
+      return { project: qp.get('project'), page: qp.get('page') || 'index' };
+    }
+    // 3. Legacy hash: #project=slug&page=index
     var hash = location.hash.replace('#', '');
-    if (!hash) return null;
-    var params = {};
-    hash.split('&').forEach(function (part) {
-      var kv = part.split('=');
-      if (kv.length === 2) params[kv[0]] = decodeURIComponent(kv[1]);
-    });
-    return params;
+    if (hash && hash.indexOf('project=') !== -1) {
+      var params = {};
+      hash.split('&').forEach(function (part) {
+        var kv = part.split('=');
+        if (kv.length === 2) params[kv[0]] = decodeURIComponent(kv[1]);
+      });
+      return params;
+    }
+    return null;
   }
 
   // ── Init: Load projects then restore state ──
   loadProjects().then(function () {
-    var params = readHash();
+    var params = readState();
     if (params && params.project) {
       var proj = projectsData.find(function (p) { return p.slug === params.project; });
       if (proj) {
@@ -109,7 +125,7 @@
 
   async function loadProjects() {
     try {
-      const resp = await fetch('api/projects.php');
+      const resp = await fetch('/env/api/projects.php');
       const data = await resp.json();
       projectsData = data.projects || [];
       renderProjectsList();
@@ -151,8 +167,12 @@
     // Render pages
     projectPages.innerHTML = '';
     proj.pages.forEach(function (page) {
+      // Snippets solo en desktop
+      if (page.slug === 'snippets' && mobileFrame.classList.contains('active')) return;
+
       var li = document.createElement('li');
       li.className = 'course-item';
+      if (page.slug === 'snippets') li.className += ' snippets-only-desktop';
       if (page.slug === pageSlug) li.classList.add('active');
       li.dataset.page = page.slug;
 
@@ -203,7 +223,7 @@
   // ── Load a project page ──
   async function loadPage(projectSlug, pageSlug, pageName) {
     try {
-      var resp = await fetch('api/content.php?project=' + encodeURIComponent(projectSlug) + '&page=' + encodeURIComponent(pageSlug));
+      var resp = await fetch('/env/api/content.php?project=' + encodeURIComponent(projectSlug) + '&page=' + encodeURIComponent(pageSlug));
       var data = await resp.json();
 
       if (data.error) {
@@ -211,8 +231,12 @@
         return;
       }
 
+      // Inject HTML first
+      contentBody.innerHTML = data.html;
+
       // Swap assets if project changed or first load
-      if (!currentPageSlug || projectStyleEl === null) {
+      var needsAssets = !currentPageSlug || projectStyleEl === null;
+      if (needsAssets) {
         unloadProjectAssets();
 
         if (data.cssPath) {
@@ -235,12 +259,15 @@
           projectScriptEl = document.createElement('script');
           projectScriptEl.id = 'project-script';
           projectScriptEl.src = data.jsPath + '?t=' + Date.now();
+          projectScriptEl.onload = function () {
+            document.dispatchEvent(new Event('contentLoaded'));
+          };
           document.body.appendChild(projectScriptEl);
         }
+      } else {
+        // Script ya cargado, solo reinicializar
+        document.dispatchEvent(new Event('contentLoaded'));
       }
-
-      // Inject HTML
-      contentBody.innerHTML = data.html;
 
       // Update state
       currentPageSlug = pageSlug;
@@ -255,7 +282,7 @@
       switchView(view);
 
       // Update hash
-      updateHash();
+      updateState();
 
       // Sync mobile
       if (!mobileFrame.classList.contains('hidden')) {
@@ -302,7 +329,7 @@
     btnCompile.disabled = true;
 
     try {
-      var resp = await fetch('api/compile-css.php', {
+      var resp = await fetch('/env/api/compile-css.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': window.CSRF_TOKEN },
         body: JSON.stringify({ project: slug })
@@ -385,8 +412,7 @@
   var btnMobileReload = document.getElementById('btn-mobile-reload');
   if (btnMobileReload) {
     btnMobileReload.addEventListener('click', function () {
-      reloadContent();
-      setTimeout(function () { syncMobileContent(); }, 300);
+      syncMobileContent();
     });
   }
 
@@ -439,7 +465,13 @@
   }
 
   function syncMobileContent() {
-    mobileContentArea.innerHTML = contentBody.innerHTML;
+    if (!currentProject || !currentPageSlug) return;
+    var theme = isDark ? 'dark' : 'light';
+    var url = '/env/api/preview.php?project=' + encodeURIComponent(currentProject.slug)
+            + '&page=' + encodeURIComponent(currentPageSlug)
+            + '&theme=' + theme
+            + '&t=' + Date.now();
+    mobileContentArea.src = url;
   }
 
   // ── Global Nav Toggle ──
@@ -453,13 +485,17 @@
   });
 
   // ── Course Nav Toggle ──
+  // Canvas usa style="display:none" en #left-side para colapsar.
+  // Las reglas CSS del proyecto usan body:has(#left-side:not([style*="display: none"]))
   btnToggleCourse.addEventListener('click', function () {
     courseNav.classList.remove('course-nav-open');
+    courseNav.style.display = 'none';
     btnOpenCourse.classList.remove('hidden');
     updateCourseOpenBtnPosition();
   });
 
   btnOpenCourse.addEventListener('click', function () {
+    courseNav.style.display = '';
     courseNav.classList.add('course-nav-open');
     btnOpenCourse.classList.add('hidden');
   });
@@ -497,7 +533,7 @@
     document.getElementById('viewer-cssdesktop-filename').textContent = 'css/' + projSlug + '-desktop.css';
 
     try {
-      var resp = await fetch('api/source.php?project=' + encodeURIComponent(projSlug) + '&page=' + encodeURIComponent(currentPageSlug));
+      var resp = await fetch('/env/api/source.php?project=' + encodeURIComponent(projSlug) + '&page=' + encodeURIComponent(currentPageSlug));
       var data = await resp.json();
 
       document.getElementById('viewer-html-code').textContent = data.html || '(vacío)';

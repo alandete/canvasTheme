@@ -233,7 +233,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <?php endif; ?>
 
     <?php if ($success): ?>
-      <a href="login.php" class="back">Ir al login</a>
+      <a href="/env/login.php" class="back">Ir al login</a>
     <?php else: ?>
 
       <?php if ($hasEmail): ?>
@@ -272,7 +272,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </form>
       </div>
 
-      <a href="login.php" class="back">Volver al login</a>
+      <a href="/env/login.php" class="back">Volver al login</a>
     <?php endif; ?>
   </div>
 </body>

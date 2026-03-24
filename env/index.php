@@ -5,8 +5,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Canvas Themes – Dev Environment</title>
-  <link rel="stylesheet" href="css/canvas-env.css">
-  <link rel="stylesheet" href="css/dark-theme.css">
+  <link rel="stylesheet" href="/env/css/canvas-env.css">
+  <link rel="stylesheet" href="/env/css/dark-theme.css">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
@@ -19,7 +19,7 @@
     <!-- COL 1: Barra de menú Canvas -->
     <nav id="global-nav" class="nav-open">
       <div class="nav-logo">
-        <img src="img/canvas-icon.svg" alt="Canvas">
+        <img src="/env/img/canvas-icon.svg" alt="Canvas">
       </div>
       <ul class="nav-items">
         <li class="nav-item active">
@@ -58,11 +58,11 @@
         <div class="nav-tools-separator"></div>
         <div class="nav-tools-group">
           <?php if (isAdmin()): ?>
-          <a href="admin.php" class="nav-tool-btn" title="Administración">
+          <a href="/admin" class="nav-tool-btn" title="Administración">
             <i class="fas fa-cog"></i><span class="nav-label">Admin</span>
           </a>
           <?php endif; ?>
-          <a href="logout.php" class="nav-tool-btn" title="<?= htmlspecialchars($_SESSION['user']) ?>">
+          <a href="/env/logout.php" class="nav-tool-btn" title="<?= htmlspecialchars($_SESSION['user']) ?>">
             <i class="fas fa-sign-out-alt"></i><span class="nav-label">Salir</span>
           </a>
         </div>
@@ -78,7 +78,7 @@
     </button>
 
     <!-- COL 2: Barra del curso (dinámica) -->
-    <aside id="course-nav" class="course-nav-open">
+    <aside id="left-side" class="course-nav-open">
       <div class="course-nav-header">
         <span class="course-name" id="course-name-label">Selecciona un proyecto</span>
         <button id="btn-toggle-course" class="course-toggle" title="Cerrar menú del curso">
@@ -209,7 +209,7 @@
         <span>9:41</span>
         <span><i class="fas fa-signal"></i> <i class="fas fa-wifi"></i> <i class="fas fa-battery-full"></i></span>
       </div>
-      <div id="mobile-content-area"></div>
+      <iframe id="mobile-content-area" frameborder="0" allow="autoplay" style="flex:1;width:100%;border:none;"></iframe>
       <nav class="mobile-bottom-nav">
         <a href="#" class="mobile-tab active"><i class="fas fa-tachometer-alt"></i><span>Tablero</span></a>
         <a href="#" class="mobile-tab"><i class="fas fa-book"></i><span>Cursos</span></a>
@@ -276,6 +276,6 @@
     </div>
   </div>
 
-  <script src="js/canvas-env.js"></script>
+  <script src="/env/js/canvas-env.js"></script>
 </body>
 </html>
