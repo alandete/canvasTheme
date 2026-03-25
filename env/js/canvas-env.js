@@ -39,6 +39,7 @@
   const btnDark = document.getElementById('btn-dark');
   const btnMobile = document.getElementById('btn-mobile');
   const btnEditor = document.getElementById('btn-editor');
+  const btnExport = document.getElementById('btn-export');
 
   // Mobile frame
   const mobileFrame = document.getElementById('mobile-frame');
@@ -157,6 +158,7 @@
 
   function selectProject(proj, initialPage) {
     currentProject = proj;
+    btnExport.classList.remove('hidden');
     var pageSlug = initialPage || 'index';
 
     // Switch to pages view
@@ -206,6 +208,7 @@
     currentProject = null;
     currentPageSlug = null;
     currentPageName = null;
+    btnExport.classList.add('hidden');
 
     unloadProjectAssets();
 
@@ -510,6 +513,11 @@
   updateCourseOpenBtnPosition();
 
   // ── Code Viewer ──
+  btnExport.addEventListener('click', function () {
+    if (!currentProject) return;
+    window.location.href = '/env/api/export-project.php?project=' + encodeURIComponent(currentProject.slug);
+  });
+
   btnEditor.addEventListener('click', function () {
     if (!currentProject || !currentPageSlug) {
       alert('Selecciona un proyecto primero.');

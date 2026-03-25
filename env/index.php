@@ -54,6 +54,9 @@
           <button id="btn-editor" class="nav-tool-btn" title="Ver código (Ctrl+E)">
             <i class="fas fa-code"></i><span class="nav-label">Código</span>
           </button>
+          <button id="btn-export" class="nav-tool-btn hidden" title="Exportar proyecto como ZIP">
+            <i class="fas fa-file-archive"></i><span class="nav-label">Exportar</span>
+          </button>
         </div>
         <div class="nav-tools-separator"></div>
         <div class="nav-tools-group">
