@@ -88,6 +88,7 @@ ul { list-style: none; }
   display: flex;
   align-items: center;
   justify-content: center;
+  background-color: #E8EAEC;
   border-bottom: 1px solid rgba(255,255,255,0.1);
   flex-shrink: 0;
 }
@@ -234,7 +235,7 @@ ul { list-style: none; }
 .course-nav-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 10px;
   padding: 12px 14px;
   flex-shrink: 0;
   min-height: 48px;
@@ -349,6 +350,12 @@ ul { list-style: none; }
   font-size: 12px;
   color: var(--canvas-text-muted);
   flex-shrink: 0;
+  transition: padding-left var(--transition-speed) ease;
+}
+
+/* When course nav is closed, push breadcrumb text past the floating hamburger */
+#canvas-app:has(#left-side:not(.course-nav-open)) .content-breadcrumb {
+  padding-left: 48px;
 }
 
 .content-breadcrumb a { color: var(--canvas-link); }

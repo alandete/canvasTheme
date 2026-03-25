@@ -575,6 +575,17 @@
     });
   });
 
+  function fallbackCopy(text) {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;pointer-events:none;';
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+  }
+
   document.querySelectorAll('.copy-btn').forEach(function (btn) {
     btn.addEventListener('click', function () {
       var targetId = btn.dataset.target;
@@ -584,7 +595,7 @@
         return;
       }
 
-      navigator.clipboard.writeText(code).then(function () {
+      function showCopied() {
         var originalHtml = btn.innerHTML;
         btn.innerHTML = '<i class="fas fa-check"></i> Copiado';
         btn.classList.add('copied');
@@ -592,7 +603,14 @@
           btn.innerHTML = originalHtml;
           btn.classList.remove('copied');
         }, 2000);
-      });
+      }
+
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(code).then(showCopied).catch(function () { fallbackCopy(code); showCopied(); });
+      } else {
+        fallbackCopy(code);
+        showCopied();
+      }
     });
   });
 

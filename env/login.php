@@ -59,9 +59,9 @@ if (isLoggedIn()) {
       margin-bottom: 32px;
     }
 
-    .login-logo i {
-      font-size: 36px;
-      color: #0374B5;
+    .login-logo img {
+      width: 48px;
+      height: auto;
     }
 
     .login-logo h1 {
@@ -133,7 +133,7 @@ if (isLoggedIn()) {
 <body>
   <div class="login-card">
     <div class="login-logo">
-      <i class="fas fa-palette"></i>
+      <img src="/env/img/canvas-lms.png" alt="Canvas LMS" />
       <h1>Canvas Themes</h1>
       <small>Ambiente de desarrollo</small>
     </div>

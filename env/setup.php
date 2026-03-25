@@ -91,7 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       margin-bottom: 28px;
     }
 
-    .setup-logo i { font-size: 36px; color: #0374B5; }
+    .setup-logo img { width: 48px; height: auto; }
     .setup-logo h1 { font-size: 20px; color: #2D3B45; margin-top: 8px; }
     .setup-logo p { font-size: 13px; color: #8B969E; margin-top: 4px; }
 
@@ -205,7 +205,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
   <div class="setup-card">
     <div class="setup-logo">
-      <i class="fas fa-palette"></i>
+      <img src="/env/img/canvas-lms.png" alt="Canvas LMS" />
       <h1>Canvas Themes</h1>
       <p>Configuración inicial del ambiente</p>
     </div>

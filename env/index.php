@@ -19,7 +19,7 @@
     <!-- COL 1: Barra de menú Canvas -->
     <nav id="global-nav" class="nav-open">
       <div class="nav-logo">
-        <img src="/env/img/canvas-icon.svg" alt="Canvas">
+        <img src="/env/img/canvas-lms.png" alt="Canvas LMS">
       </div>
       <ul class="nav-items">
         <li class="nav-item active">
@@ -80,10 +80,10 @@
     <!-- COL 2: Barra del curso (dinámica) -->
     <aside id="left-side" class="course-nav-open">
       <div class="course-nav-header">
-        <span class="course-name" id="course-name-label">Selecciona un proyecto</span>
         <button id="btn-toggle-course" class="course-toggle" title="Cerrar menú del curso">
           <i class="fas fa-bars"></i>
         </button>
+        <span class="course-name" id="course-name-label">Selecciona un proyecto</span>
       </div>
 
       <!-- Vista: lista de proyectos -->
