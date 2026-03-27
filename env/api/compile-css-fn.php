@@ -11,14 +11,17 @@ function compileCssFromMaster($projectPath, $slug) {
     $master = file_get_contents($masterFile);
 
     // ── Eliminar bloque de ambiente de pruebas ──
-    // Busca el comentario específico + el bloque html[data-theme="dark"] { ... }
-    // Usa marcador exacto para no capturar otros comentarios
-    // Eliminar comentario + bloque html[data-theme="dark"]
-    // El bloque no tiene llaves anidadas, solo propiedades CSS
+    // 1. Comentario + bloque principal html[data-theme="dark"] { variables }
     $clean = preg_replace(
         '/\/\*[═\s]*DARK MODE\s*—\s*Ambiente de pruebas[^*]*\*\/\s*html\[data-theme="dark"\]\s*\{[^}]*\}/s',
         '',
         $master
+    );
+    // 2. Todas las reglas individuales html[data-theme="dark"] .selector { ... }
+    $clean = preg_replace(
+        '/html\[data-theme="dark"\]\s+[^{]+\{[^}]*\}\s*/s',
+        '',
+        $clean
     );
 
     // ── Desktop: todo limpio ──
