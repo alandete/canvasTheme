@@ -114,24 +114,29 @@
     else if (!orgCount.value) orgCount.value = 4;
   });
 
-  // ── Sincronizar picker ↔ hex ──
-  ['primary', 'secondary', 'accent1', 'accent2', 'accent3'].forEach(function (id) {
-    var picker = document.getElementById('color-' + id + '-picker');
-    var hex = document.getElementById('color-' + id);
+  // ── Sincronizar picker ↔ hex (crear + editar) ──
+  function syncColorFields(prefix) {
+    ['primary', 'secondary'].forEach(function (id) {
+      var picker = document.getElementById(prefix + 'color-' + id + '-picker');
+      var hex = document.getElementById(prefix + 'color-' + id);
+      if (!picker || !hex) return;
 
-    picker.addEventListener('input', function () {
-      hex.value = picker.value.toUpperCase();
-    });
+      picker.addEventListener('input', function () {
+        hex.value = picker.value.toUpperCase();
+      });
 
-    hex.addEventListener('input', function () {
-      var val = hex.value.trim();
-      if (!val.startsWith('#')) val = '#' + val;
-      hex.value = val.toUpperCase();
-      if (/^#[0-9A-F]{6}$/i.test(val)) {
-        picker.value = val;
-      }
+      hex.addEventListener('input', function () {
+        var val = hex.value.trim();
+        if (!val.startsWith('#')) val = '#' + val;
+        hex.value = val.toUpperCase();
+        if (/^#[0-9A-F]{6}$/i.test(val)) {
+          picker.value = val;
+        }
+      });
     });
-  });
+  }
+  syncColorFields('');       // Formulario crear
+  syncColorFields('edit-');  // Modal editar
 
   // Delete modal
   var deleteOverlay = document.getElementById('delete-overlay');
@@ -145,10 +150,16 @@
   var editProjectName = document.getElementById('edit-project-name');
   var editOrgType = document.getElementById('edit-org-type');
   var editOrgCount = document.getElementById('edit-org-count');
+  var editOrgHint = document.getElementById('edit-org-hint');
   var editMessage = document.getElementById('edit-message');
   var btnSaveEdit = document.getElementById('btn-save-edit');
   var btnCancelEdit = document.getElementById('btn-cancel-edit');
+  var editColorPrimaryPicker = document.getElementById('edit-color-primary-picker');
+  var editColorPrimary = document.getElementById('edit-color-primary');
+  var editColorSecondaryPicker = document.getElementById('edit-color-secondary-picker');
+  var editColorSecondary = document.getElementById('edit-color-secondary');
   var pendingEditSlug = null;
+  var projectsCache = [];
 
   // ── Load projects ──
   loadProjects();
@@ -157,7 +168,8 @@
     try {
       var resp = await fetch('/env/api/projects.php');
       var data = await resp.json();
-      renderProjects(data.projects || []);
+      projectsCache = data.projects || [];
+      renderProjects(projectsCache);
     } catch (e) {
       console.error('Error cargando proyectos:', e);
     }
@@ -189,10 +201,15 @@
           '</button>';
 
       var protectedBadge = proj.protected ? ' <span class="badge-protected">Demo</span>' : '';
+      var inactiveBadge = !proj.active ? ' <span class="badge-inactive">Inactivo</span>' : '';
+      var toggleIcon = proj.active ? 'fa-toggle-on' : 'fa-toggle-off';
+      var toggleTitle = proj.active ? 'Desactivar proyecto' : 'Activar proyecto';
+
+      if (!proj.active) card.className += ' project-card-inactive';
 
       card.innerHTML =
         '<div class="project-card-header">' +
-          '<h3><i class="fas fa-folder"></i>' + escapeHtml(proj.name) + protectedBadge + '</h3>' +
+          '<h3><i class="fas fa-folder"></i>' + escapeHtml(proj.name) + protectedBadge + inactiveBadge + '</h3>' +
         '</div>' +
         '<div class="project-card-meta">' +
           '<code>projects/' + escapeHtml(proj.slug) + '/</code>' +
@@ -203,6 +220,9 @@
           (proj.hasJs ? ' &nbsp;<i class="fas fa-code"></i> JS' : '') +
         '</div>' +
         '<div class="project-card-actions">' +
+          '<button class="btn-toggle" data-slug="' + escapeHtml(proj.slug) + '" data-active="' + (proj.active ? '1' : '0') + '" title="' + toggleTitle + '">' +
+            '<i class="fas ' + toggleIcon + '"></i>' +
+          '</button>' +
           '<a href="index.php#project=' + encodeURIComponent(proj.slug) + '" class="btn-open" title="Abrir">' +
             '<i class="fas fa-eye"></i>' +
           '</a>' +
@@ -231,10 +251,31 @@
     document.querySelectorAll('.btn-edit').forEach(function (btn) {
       btn.addEventListener('click', function () {
         pendingEditSlug = btn.dataset.slug;
+        var proj = projectsCache.find(function (p) { return p.slug === btn.dataset.slug; });
+
         editProjectName.value = btn.dataset.name;
-        editOrgType.value = 'none';
-        editOrgCount.value = '';
-        editOrgCount.disabled = true;
+
+        // Pre-cargar colores
+        var pc = (proj && proj.colors) ? proj.colors.primary : '#0374B5';
+        var sc = (proj && proj.colors) ? proj.colors.secondary : '#2D3B45';
+        editColorPrimary.value = pc.toUpperCase();
+        editColorPrimaryPicker.value = pc;
+        editColorSecondary.value = sc.toUpperCase();
+        editColorSecondaryPicker.value = sc;
+
+        // Pre-cargar organización
+        if (proj && proj.orgType !== 'none') {
+          editOrgType.value = proj.orgType;
+          editOrgCount.value = proj.orgCount;
+          editOrgCount.disabled = false;
+          editOrgHint.textContent = 'Actualmente: ' + proj.orgCount + ' página(s). Solo agrega nuevas.';
+        } else {
+          editOrgType.value = 'none';
+          editOrgCount.value = '';
+          editOrgCount.disabled = true;
+          editOrgHint.textContent = 'Solo agrega nuevas páginas. No elimina las existentes.';
+        }
+
         editMessage.classList.add('hidden');
         editOverlay.classList.remove('hidden');
         editProjectName.focus();
@@ -245,6 +286,27 @@
     document.querySelectorAll('.btn-compile').forEach(function (btn) {
       btn.addEventListener('click', function () {
         compileProject(btn.dataset.slug, btn);
+      });
+    });
+
+    // Bind toggle buttons
+    document.querySelectorAll('.btn-toggle').forEach(function (btn) {
+      btn.addEventListener('click', async function () {
+        var slug = btn.dataset.slug;
+        var currentlyActive = btn.dataset.active === '1';
+        btn.disabled = true;
+        try {
+          var resp = await fetch('/env/api/toggle-project.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': window.CSRF_TOKEN },
+            body: JSON.stringify({ slug: slug, active: !currentlyActive })
+          });
+          var data = await resp.json();
+          if (data.success) loadProjects();
+        } catch (e) {
+          console.error('Error toggling project:', e);
+        }
+        btn.disabled = false;
       });
     });
   }
@@ -319,6 +381,10 @@
         body: JSON.stringify({
           slug: pendingEditSlug,
           name: name,
+          colors: {
+            primary: editColorPrimary.value,
+            secondary: editColorSecondary.value
+          },
           orgType: org,
           orgCount: count
         })
@@ -400,10 +466,7 @@
 
     var colors = {
       primary:   document.getElementById('color-primary').value,
-      secondary: document.getElementById('color-secondary').value,
-      accent1:   document.getElementById('color-accent1').value,
-      accent2:   document.getElementById('color-accent2').value,
-      accent3:   document.getElementById('color-accent3').value
+      secondary: document.getElementById('color-secondary').value
     };
 
     var organization = orgType.value;

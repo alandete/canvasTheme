@@ -112,9 +112,6 @@ $masterContent = tpl('css/master.css', ['IMPORTS' => $imports]);
 $colorMap = [
     'primary'   => '--ct-primary-base',
     'secondary' => '--ct-secondary-base',
-    'accent1'   => '--ct-accent-1-base',
-    'accent2'   => '--ct-accent-2-base',
-    'accent3'   => '--ct-accent-3-base',
 ];
 foreach ($colorMap as $key => $varName) {
     if (!empty($colors[$key]) && preg_match('/^#[0-9A-Fa-f]{6}$/', $colors[$key])) {
@@ -132,7 +129,8 @@ file_put_contents($projectPath . '/css/' . $slug . '-master.css', $masterContent
 include __DIR__ . '/compile-css-fn.php';
 compileCssFromMaster($projectPath, $slug);
 
-// Snippets
+// Palette & Snippets
+file_put_contents($projectPath . '/palette.html', tpl('palette.html'));
 file_put_contents($projectPath . '/snippets.html', tpl('snippets.html'));
 
 // JS

@@ -13,6 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 $input    = json_decode(file_get_contents('php://input'), true);
 $slug     = trim($input['slug'] ?? '');
 $name     = trim($input['name'] ?? '');
+$colors   = $input['colors'] ?? [];
 $orgType  = $input['orgType'] ?? 'none';
 $orgCount = intval($input['orgCount'] ?? 0);
 
@@ -43,6 +44,61 @@ if ($name) {
         $html = preg_replace('/<h2>[^<]*<\/h2>/', '<h2>' . $escaped . '</h2>', $html, 1);
         file_put_contents($indexFile, $html);
         $changes[] = 'Nombre actualizado';
+    }
+}
+
+// Update colors in master CSS if provided
+if (!empty($colors)) {
+    $masterFile = $projectPath . '/css/' . $slug . '-master.css';
+    if (file_exists($masterFile)) {
+        $masterContent = file_get_contents($masterFile);
+        $colorUpdated = false;
+
+        // New template format (--ct-*)
+        $colorMap = [
+            'primary'   => '--ct-primary-base',
+            'secondary' => '--ct-secondary-base',
+        ];
+        foreach ($colorMap as $key => $varName) {
+            if (!empty($colors[$key]) && preg_match('/^#[0-9A-Fa-f]{6}$/', $colors[$key])) {
+                $masterContent = preg_replace(
+                    '/' . preg_quote($varName, '/') . ':\s*#[0-9A-Fa-f]{6}/',
+                    $varName . ': ' . $colors[$key],
+                    $masterContent,
+                    -1,
+                    $count
+                );
+                if ($count > 0) $colorUpdated = true;
+            }
+        }
+
+        // Legacy format (--up-*)
+        $legacyMap = [
+            'primary'   => '--up-primario-1',
+            'secondary' => '--up-primario-2',
+        ];
+        foreach ($legacyMap as $key => $varName) {
+            if (!empty($colors[$key]) && preg_match('/^#[0-9A-Fa-f]{6}$/', $colors[$key])) {
+                $masterContent = preg_replace(
+                    '/' . preg_quote($varName, '/') . ':\s*#[0-9A-Fa-f]{6}/',
+                    $varName . ': ' . $colors[$key],
+                    $masterContent,
+                    -1,
+                    $count
+                );
+                if ($count > 0) $colorUpdated = true;
+            }
+        }
+
+        if ($colorUpdated) {
+            file_put_contents($masterFile, $masterContent);
+
+            // Recompilar mobile y desktop
+            include_once __DIR__ . '/compile-css-fn.php';
+            compileCssFromMaster($projectPath, $slug);
+
+            $changes[] = 'Colores actualizados y CSS recompilado';
+        }
     }
 }
 

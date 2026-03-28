@@ -63,7 +63,8 @@ $activeTab = isset($_GET['tab']) ? $_GET['tab'] : 'projects';
         </div>
 
         <div class="form-group">
-          <label>Colores del proyecto</label>
+          <label>Colores de la marca</label>
+          <p class="form-hint" style="margin: 0 0 8px;">Solo 2 colores. El sistema genera la paleta completa autom&aacute;ticamente.</p>
           <div class="color-inputs">
             <div class="color-field">
               <input type="color" id="color-primary-picker" value="#0374B5">
@@ -74,21 +75,6 @@ $activeTab = isset($_GET['tab']) ? $_GET['tab'] : 'projects';
               <input type="color" id="color-secondary-picker" value="#2D3B45">
               <input type="text" id="color-secondary" class="color-hex" value="#2D3B45" maxlength="7" placeholder="#000000">
               <span>Secundario</span>
-            </div>
-            <div class="color-field">
-              <input type="color" id="color-accent1-picker" value="#E63946">
-              <input type="text" id="color-accent1" class="color-hex" value="#E63946" maxlength="7" placeholder="#000000">
-              <span>Acento 1</span>
-            </div>
-            <div class="color-field">
-              <input type="color" id="color-accent2-picker" value="#457B9D">
-              <input type="text" id="color-accent2" class="color-hex" value="#457B9D" maxlength="7" placeholder="#000000">
-              <span>Acento 2</span>
-            </div>
-            <div class="color-field">
-              <input type="color" id="color-accent3-picker" value="#2B9348">
-              <input type="text" id="color-accent3" class="color-hex" value="#2B9348" maxlength="7" placeholder="#000000">
-              <span>Acento 3</span>
             </div>
           </div>
         </div>
@@ -262,17 +248,32 @@ $activeTab = isset($_GET['tab']) ? $_GET['tab'] : 'projects';
         <input type="text" id="edit-project-name" autocomplete="off">
       </div>
       <div class="form-group">
-        <label>Organización del contenido</label>
+        <label>Colores de la marca</label>
+        <div class="color-inputs">
+          <div class="color-field">
+            <input type="color" id="edit-color-primary-picker" value="#0374B5">
+            <input type="text" id="edit-color-primary" class="color-hex" value="#0374B5" maxlength="7" placeholder="#000000">
+            <span>Primario</span>
+          </div>
+          <div class="color-field">
+            <input type="color" id="edit-color-secondary-picker" value="#2D3B45">
+            <input type="text" id="edit-color-secondary" class="color-hex" value="#2D3B45" maxlength="7" placeholder="#000000">
+            <span>Secundario</span>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Agregar p&aacute;ginas de organizaci&oacute;n</label>
         <div class="form-row">
           <select id="edit-org-type" class="form-select">
-            <option value="none">Sin organización</option>
+            <option value="none">Sin cambios</option>
             <option value="semanas">Semanas</option>
-            <option value="modulos">Módulos</option>
+            <option value="modulos">M&oacute;dulos</option>
             <option value="unidades">Unidades</option>
           </select>
           <input type="number" id="edit-org-count" class="form-input-sm" min="1" max="30" value="4" placeholder="Cantidad">
         </div>
-        <small class="form-hint">Solo agrega nuevas páginas de organización. No elimina las existentes.</small>
+        <small class="form-hint" id="edit-org-hint">Solo agrega nuevas p&aacute;ginas. No elimina las existentes.</small>
       </div>
       <div id="edit-message" class="form-message hidden"></div>
       <div class="modal-actions">

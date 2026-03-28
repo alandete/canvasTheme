@@ -137,11 +137,12 @@
 
   function renderProjectsList() {
     projectsList.innerHTML = '';
-    if (projectsData.length === 0) {
-      projectsList.innerHTML = '<li class="course-item-empty">No hay proyectos. Crea uno desde Admin.</li>';
+    var activeProjects = projectsData.filter(function (p) { return p.active !== false; });
+    if (activeProjects.length === 0) {
+      projectsList.innerHTML = '<li class="course-item-empty">No hay proyectos activos. Crea uno desde Admin.</li>';
       return;
     }
-    projectsData.forEach(function (proj) {
+    activeProjects.forEach(function (proj) {
       var li = document.createElement('li');
       li.className = 'course-item';
       var a = document.createElement('a');

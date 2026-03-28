@@ -4,82 +4,118 @@
 
 :root {
 
-  /* ── Colores primario y secundario (editar solo estos) ── */
+  /* ══════════════════════════════════════════════════════════════════════
+     1. FUENTE — Solo editar estos 2 colores
+     ══════════════════════════════════════════════════════════════════════ */
   --ct-primary-base: #0374B5;
   --ct-secondary-base: #2D3B45;
 
-  /* ── Colores de acento (editar solo estos) ── */
-  --ct-accent-1-base: #E63946;
-  --ct-accent-2-base: #457B9D;
-  --ct-accent-3-base: #2B9348;
+  /* ══════════════════════════════════════════════════════════════════════
+     2. PALETA DERIVADA — No editar manualmente
+     ══════════════════════════════════════════════════════════════════════ */
 
-  /* ── Colores de uso (heredan de los base) ── */
-  --ct-primary: var(--ct-primary-base);
-  --ct-secondary: var(--ct-secondary-base);
-  --ct-accent-1: var(--ct-accent-1-base);
-  --ct-accent-2: var(--ct-accent-2-base);
-  --ct-accent-3: var(--ct-accent-3-base);
+  /* ── Escala primario ── */
+  --ct-primary-light: color-mix(in oklch, var(--ct-primary-base) 30%, white);
+  --ct-primary:       var(--ct-primary-base);
+  --ct-primary-dark:  color-mix(in oklch, var(--ct-primary-base) 70%, black);
 
-  /* ── Paleta de grises ── */
-  --ct-gray-000:  color-mix(in srgb, black 0%, white);
-  --ct-gray-050:  color-mix(in srgb, var(--ct-gray-1000) 3%, var(--ct-gray-000));
-  --ct-gray-100:  color-mix(in srgb, var(--ct-gray-1000) 5%, var(--ct-gray-000));
-  --ct-gray-200:  color-mix(in srgb, var(--ct-gray-1000) 12%, var(--ct-gray-000));
-  --ct-gray-300:  color-mix(in srgb, var(--ct-gray-1000) 20%, var(--ct-gray-000));
-  --ct-gray-400:  color-mix(in srgb, var(--ct-gray-1000) 35%, var(--ct-gray-000));
-  --ct-gray-500:  color-mix(in srgb, var(--ct-gray-1000) 50%, var(--ct-gray-000));
-  --ct-gray-600:  color-mix(in srgb, var(--ct-gray-1000) 65%, var(--ct-gray-000));
-  --ct-gray-700:  color-mix(in srgb, var(--ct-gray-1000) 75%, var(--ct-gray-000));
-  --ct-gray-800:  color-mix(in srgb, var(--ct-gray-1000) 85%, var(--ct-gray-000));
-  --ct-gray-900:  color-mix(in srgb, var(--ct-gray-1000) 95%, var(--ct-gray-000));
-  --ct-gray-1000: color-mix(in srgb, black 93%, white);
+  /* ── Escala secundario ── */
+  --ct-secondary-light: color-mix(in oklch, var(--ct-secondary-base) 30%, white);
+  --ct-secondary:       var(--ct-secondary-base);
+  --ct-secondary-dark:  color-mix(in oklch, var(--ct-secondary-base) 70%, black);
 
-  /* ── Canvas: enlaces y botones ── */
-  --ic-link-color: var(--ct-primary);
-  --ic-brand-button--primary-bgd: var(--ct-primary);
-  --ic-brand-button--primary-text: var(--ct-gray-000);
-  --ic-brand-button--secondary-bgd: var(--ct-secondary);
-  --ic-brand-button--secondary-text: var(--ct-gray-000);
+  /* ── Neutros tintados (2-4% del secundario para temperatura de marca) ── */
+  --ct-neutral-000: color-mix(in oklch, var(--ct-secondary-base) 4%, white);
+  --ct-neutral-050: color-mix(in oklch, var(--ct-secondary-base) 4%, color-mix(in oklch, black  3%, white));
+  --ct-neutral-100: color-mix(in oklch, var(--ct-secondary-base) 4%, color-mix(in oklch, black  7%, white));
+  --ct-neutral-200: color-mix(in oklch, var(--ct-secondary-base) 3%, color-mix(in oklch, black 14%, white));
+  --ct-neutral-300: color-mix(in oklch, var(--ct-secondary-base) 3%, color-mix(in oklch, black 25%, white));
+  --ct-neutral-400: color-mix(in oklch, var(--ct-secondary-base) 2%, color-mix(in oklch, black 40%, white));
+  --ct-neutral-500: color-mix(in oklch, var(--ct-secondary-base) 2%, color-mix(in oklch, black 55%, white));
+  --ct-neutral-600: color-mix(in oklch, var(--ct-secondary-base) 2%, color-mix(in oklch, black 68%, white));
+  --ct-neutral-700: color-mix(in oklch, var(--ct-secondary-base) 3%, color-mix(in oklch, black 78%, white));
+  --ct-neutral-800: color-mix(in oklch, var(--ct-secondary-base) 3%, color-mix(in oklch, black 87%, white));
+  --ct-neutral-900: color-mix(in oklch, var(--ct-secondary-base) 4%, color-mix(in oklch, black 93%, white));
+  --ct-neutral-950: color-mix(in oklch, var(--ct-secondary-base) 4%, color-mix(in oklch, black 97%, white));
+
+  /* ══════════════════════════════════════════════════════════════════════
+     3. TOKENS SEMÁNTICOS — Lo que consumen los componentes
+     ══════════════════════════════════════════════════════════════════════ */
 
   /* ── Fondos ── */
-  --ct-bg-body: var(--ct-gray-000);
-  --ct-bg-card: var(--ct-gray-000);
-  --ct-bg-subtle: var(--ct-gray-050);
-  --ct-bg-muted: var(--ct-gray-100);
+  --ct-bg:        var(--ct-neutral-000);
+  --ct-bg-raised: var(--ct-neutral-000);
+  --ct-bg-subtle: var(--ct-neutral-050);
+  --ct-bg-muted:  var(--ct-neutral-100);
+  --ct-bg-accent: color-mix(in oklch, var(--ct-primary) 8%, var(--ct-bg));
+
+  /* ── Texto ── */
+  --ct-text:           var(--ct-neutral-950);
+  --ct-text-secondary: var(--ct-neutral-600);
+  --ct-text-muted:     var(--ct-neutral-400);
+  --ct-text-inverse:   var(--ct-neutral-000);
+
+  /* ── Enlaces ── */
+  --ct-link:       var(--ct-primary);
+  --ct-link-hover: var(--ct-primary-dark);
 
   /* ── Bordes ── */
-  --ct-border-color: var(--ct-gray-300);
-  --ct-border-width: 1px;
-  --ct-border: var(--ct-border-width) solid var(--ct-border-color);
+  --ct-border:        var(--ct-neutral-200);
+  --ct-border-strong: var(--ct-neutral-300);
 
-  /* ── Border radius: sm=inputs | base=cards | lg=banners | full=pills ── */
-  --ct-radius-sm: 4px;
-  --ct-radius: 8px;
-  --ct-radius-lg: 16px;
+  /* ── Botón primario ── */
+  --ct-btn-primary-bg:     var(--ct-primary);
+  --ct-btn-primary-text:   var(--ct-neutral-000);
+  --ct-btn-primary-hover:  color-mix(in oklch, var(--ct-primary) 82%, black);
+  --ct-btn-primary-active: color-mix(in oklch, var(--ct-primary) 70%, black);
+
+  /* ── Botón secundario ── */
+  --ct-btn-secondary-bg:     var(--ct-secondary);
+  --ct-btn-secondary-text:   var(--ct-neutral-000);
+  --ct-btn-secondary-hover:  color-mix(in oklch, var(--ct-secondary) 82%, black);
+  --ct-btn-secondary-active: color-mix(in oklch, var(--ct-secondary) 70%, black);
+
+  /* ── Botón outline ── */
+  --ct-btn-outline-border:    var(--ct-primary);
+  --ct-btn-outline-text:      var(--ct-primary);
+  --ct-btn-outline-hover-bg:  color-mix(in oklch, var(--ct-primary) 10%, transparent);
+  --ct-btn-outline-active-bg: color-mix(in oklch, var(--ct-primary) 18%, transparent);
+
+  /* ── Focus ring ── */
+  --ct-focus-ring: color-mix(in oklch, var(--ct-primary) 50%, transparent);
+
+  /* ── Canvas LMS bridge ── */
+  --bs-body-bg:    var(--ct-bg);
+  --bs-body-color: var(--ct-text);
+
+  /* ══════════════════════════════════════════════════════════════════════
+     4. UTILIDADES
+     ══════════════════════════════════════════════════════════════════════ */
+
+  /* ── Border radius ── */
+  --ct-radius-sm:   4px;
+  --ct-radius:      8px;
+  --ct-radius-lg:   16px;
   --ct-radius-full: 9999px;
 
   /* ── Espaciado ── */
-  --ct-space-xs: 4px;
-  --ct-space-sm: 8px;
-  --ct-space-md: 16px;
-  --ct-space-lg: 24px;
-  --ct-space-xl: 32px;
+  --ct-space-xs:  4px;
+  --ct-space-sm:  8px;
+  --ct-space-md:  16px;
+  --ct-space-lg:  24px;
+  --ct-space-xl:  32px;
   --ct-space-2xl: 48px;
 
-  /* ── Sombras cajas: proyección centro-inferior ── */
-  --ct-shadow-soft: 0 4px 6px -2px color-mix(in srgb, var(--ct-gray-1000) 10%, transparent);
-  --ct-shadow-hard: 0 8px 16px -4px color-mix(in srgb, var(--ct-gray-1000) 25%, transparent);
-
-  /* ── Sombras texto (text-shadow) ── */
-  --ct-text-glow: 0 1px 8px color-mix(in srgb, var(--ct-gray-1000) 40%, transparent);
-  --ct-text-outline: 0 1px 2px color-mix(in srgb, var(--ct-gray-1000) 70%, transparent), 0 0 4px color-mix(in srgb, var(--ct-gray-1000) 30%, transparent);
-
-  /* ── Sombra imágenes transparentes: filter: var(--ct-img-shadow) ── */
-  --ct-img-shadow: drop-shadow(0 4px 6px color-mix(in srgb, var(--ct-gray-1000) 25%, transparent));
+  /* ── Sombras ── */
+  --ct-shadow-soft: 0 4px 6px -2px color-mix(in oklch, var(--ct-neutral-950) 10%, transparent);
+  --ct-shadow-hard: 0 8px 16px -4px color-mix(in oklch, var(--ct-neutral-950) 25%, transparent);
+  --ct-text-glow:    0 1px 8px color-mix(in oklch, var(--ct-neutral-950) 40%, transparent);
+  --ct-text-outline: 0 1px 2px color-mix(in oklch, var(--ct-neutral-950) 70%, transparent), 0 0 4px color-mix(in oklch, var(--ct-neutral-950) 30%, transparent);
+  --ct-img-shadow:   drop-shadow(0 4px 6px color-mix(in oklch, var(--ct-neutral-950) 25%, transparent));
 
   /* ── Transiciones ── */
   --ct-transition-fast: 0.15s ease;
-  --ct-transition: 0.25s ease;
+  --ct-transition:      0.25s ease;
   --ct-transition-slow: 0.4s ease;
 }
 
@@ -88,20 +124,55 @@
 ══════════════════════════════════════════════════════════════════════════ */
 @media (prefers-color-scheme: dark) {
   :root {
-    --ct-primary: color-mix(in srgb, var(--ct-primary-base) 65%, white);
-    --ct-secondary: color-mix(in srgb, var(--ct-secondary-base) 50%, white);
-    --ct-accent-1: color-mix(in srgb, var(--ct-accent-1-base) 65%, white);
-    --ct-accent-2: color-mix(in srgb, var(--ct-accent-2-base) 65%, white);
-    --ct-accent-3: color-mix(in srgb, var(--ct-accent-3-base) 65%, white);
+    /* Escala primario */
+    --ct-primary-light: color-mix(in oklch, var(--ct-primary-base) 50%, white);
+    --ct-primary:       color-mix(in oklch, var(--ct-primary-base) 65%, white);
+    --ct-primary-dark:  color-mix(in oklch, var(--ct-primary-base) 85%, white);
 
-    --ct-gray-000: color-mix(in srgb, white 10%, black);
-    --ct-gray-1000: color-mix(in srgb, white 88%, black);
+    /* Escala secundario */
+    --ct-secondary-light: color-mix(in oklch, var(--ct-secondary-base) 40%, white);
+    --ct-secondary:       color-mix(in oklch, var(--ct-secondary-base) 55%, white);
+    --ct-secondary-dark:  color-mix(in oklch, var(--ct-secondary-base) 75%, white);
 
-    --ct-shadow-soft: 0 4px 6px -2px color-mix(in srgb, var(--ct-gray-1000) 25%, transparent);
-    --ct-shadow-hard: 0 8px 16px -4px color-mix(in srgb, var(--ct-gray-1000) 50%, transparent);
-    --ct-text-glow: 0 1px 8px color-mix(in srgb, var(--ct-gray-1000) 60%, transparent);
-    --ct-text-outline: 0 1px 2px color-mix(in srgb, var(--ct-gray-1000) 90%, transparent), 0 0 4px color-mix(in srgb, var(--ct-gray-1000) 50%, transparent);
-    --ct-img-shadow: drop-shadow(0 4px 6px color-mix(in srgb, var(--ct-gray-1000) 50%, transparent));
+    /* Fondos */
+    --ct-bg:        var(--ct-neutral-900);
+    --ct-bg-raised: var(--ct-neutral-800);
+    --ct-bg-subtle: var(--ct-neutral-800);
+    --ct-bg-muted:  var(--ct-neutral-700);
+    --ct-bg-accent: color-mix(in oklch, var(--ct-primary) 10%, var(--ct-bg));
+
+    /* Texto */
+    --ct-text:           var(--ct-neutral-050);
+    --ct-text-secondary: var(--ct-neutral-300);
+    --ct-text-muted:     var(--ct-neutral-500);
+    --ct-text-inverse:   var(--ct-neutral-950);
+
+    /* Enlaces */
+    --ct-link:       var(--ct-primary);
+    --ct-link-hover: var(--ct-primary-light);
+
+    /* Bordes */
+    --ct-border:        var(--ct-neutral-700);
+    --ct-border-strong: var(--ct-neutral-600);
+
+    /* Botones: hover hacia blanco en dark */
+    --ct-btn-primary-hover:    color-mix(in oklch, var(--ct-primary) 82%, white);
+    --ct-btn-primary-active:   color-mix(in oklch, var(--ct-primary) 70%, white);
+    --ct-btn-secondary-hover:  color-mix(in oklch, var(--ct-secondary) 82%, white);
+    --ct-btn-secondary-active: color-mix(in oklch, var(--ct-secondary) 70%, white);
+    --ct-btn-outline-hover-bg: color-mix(in oklch, var(--ct-primary) 15%, transparent);
+    --ct-btn-outline-active-bg:color-mix(in oklch, var(--ct-primary) 25%, transparent);
+
+    /* Sombras */
+    --ct-shadow-soft: 0 4px 6px -2px color-mix(in oklch, var(--ct-neutral-950) 25%, transparent);
+    --ct-shadow-hard: 0 8px 16px -4px color-mix(in oklch, var(--ct-neutral-950) 50%, transparent);
+    --ct-text-glow:    0 1px 8px color-mix(in oklch, var(--ct-neutral-950) 60%, transparent);
+    --ct-text-outline: 0 1px 2px color-mix(in oklch, var(--ct-neutral-950) 90%, transparent), 0 0 4px color-mix(in oklch, var(--ct-neutral-950) 50%, transparent);
+    --ct-img-shadow:   drop-shadow(0 4px 6px color-mix(in oklch, var(--ct-neutral-950) 50%, transparent));
+
+    /* Canvas LMS bridge */
+    --bs-body-bg:    var(--ct-bg);
+    --bs-body-color: var(--ct-text);
   }
 }
 
@@ -109,20 +180,46 @@
    DARK MODE — Ambiente de pruebas (Se elimina automáticamente al compilar)
 ══════════════════════════════════════════════════════════════════════════ */
 html[data-theme="dark"] {
-  --ct-primary: color-mix(in srgb, var(--ct-primary-base) 65%, white);
-  --ct-secondary: color-mix(in srgb, var(--ct-secondary-base) 50%, white);
-  --ct-accent-1: color-mix(in srgb, var(--ct-accent-1-base) 65%, white);
-  --ct-accent-2: color-mix(in srgb, var(--ct-accent-2-base) 65%, white);
-  --ct-accent-3: color-mix(in srgb, var(--ct-accent-3-base) 65%, white);
+  --ct-primary-light: color-mix(in oklch, var(--ct-primary-base) 50%, white);
+  --ct-primary:       color-mix(in oklch, var(--ct-primary-base) 65%, white);
+  --ct-primary-dark:  color-mix(in oklch, var(--ct-primary-base) 85%, white);
 
-  --ct-gray-000: color-mix(in srgb, white 10%, black);
-  --ct-gray-1000: color-mix(in srgb, white 88%, black);
+  --ct-secondary-light: color-mix(in oklch, var(--ct-secondary-base) 40%, white);
+  --ct-secondary:       color-mix(in oklch, var(--ct-secondary-base) 55%, white);
+  --ct-secondary-dark:  color-mix(in oklch, var(--ct-secondary-base) 75%, white);
 
-  --ct-shadow-soft: 0 4px 6px -2px color-mix(in srgb, var(--ct-gray-1000) 25%, transparent);
-  --ct-shadow-hard: 0 8px 16px -4px color-mix(in srgb, var(--ct-gray-1000) 50%, transparent);
-  --ct-text-glow: 0 1px 8px color-mix(in srgb, var(--ct-gray-1000) 60%, transparent);
-  --ct-text-outline: 0 1px 2px color-mix(in srgb, var(--ct-gray-1000) 90%, transparent), 0 0 4px color-mix(in srgb, var(--ct-gray-1000) 50%, transparent);
-  --ct-img-shadow: drop-shadow(0 4px 6px color-mix(in srgb, var(--ct-gray-1000) 50%, transparent));
+  --ct-bg:        var(--ct-neutral-900);
+  --ct-bg-raised: var(--ct-neutral-800);
+  --ct-bg-subtle: var(--ct-neutral-800);
+  --ct-bg-muted:  var(--ct-neutral-700);
+  --ct-bg-accent: color-mix(in oklch, var(--ct-primary) 10%, var(--ct-bg));
+
+  --ct-text:           var(--ct-neutral-050);
+  --ct-text-secondary: var(--ct-neutral-300);
+  --ct-text-muted:     var(--ct-neutral-500);
+  --ct-text-inverse:   var(--ct-neutral-950);
+
+  --ct-link:       var(--ct-primary);
+  --ct-link-hover: var(--ct-primary-light);
+
+  --ct-border:        var(--ct-neutral-700);
+  --ct-border-strong: var(--ct-neutral-600);
+
+  --ct-btn-primary-hover:    color-mix(in oklch, var(--ct-primary) 82%, white);
+  --ct-btn-primary-active:   color-mix(in oklch, var(--ct-primary) 70%, white);
+  --ct-btn-secondary-hover:  color-mix(in oklch, var(--ct-secondary) 82%, white);
+  --ct-btn-secondary-active: color-mix(in oklch, var(--ct-secondary) 70%, white);
+  --ct-btn-outline-hover-bg: color-mix(in oklch, var(--ct-primary) 15%, transparent);
+  --ct-btn-outline-active-bg:color-mix(in oklch, var(--ct-primary) 25%, transparent);
+
+  --ct-shadow-soft: 0 4px 6px -2px color-mix(in oklch, var(--ct-neutral-950) 25%, transparent);
+  --ct-shadow-hard: 0 8px 16px -4px color-mix(in oklch, var(--ct-neutral-950) 50%, transparent);
+  --ct-text-glow:    0 1px 8px color-mix(in oklch, var(--ct-neutral-950) 60%, transparent);
+  --ct-text-outline: 0 1px 2px color-mix(in oklch, var(--ct-neutral-950) 90%, transparent), 0 0 4px color-mix(in oklch, var(--ct-neutral-950) 50%, transparent);
+  --ct-img-shadow:   drop-shadow(0 4px 6px color-mix(in oklch, var(--ct-neutral-950) 50%, transparent));
+
+  --bs-body-bg:    var(--ct-bg);
+  --bs-body-color: var(--ct-text);
 }
 
 /* ══════════════════════════════════════════════════════════════════════════

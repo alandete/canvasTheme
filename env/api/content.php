@@ -25,6 +25,8 @@ if ($page === 'index') {
     $filePath = $projectPath . '/index.html';
 } elseif ($page === 'snippets') {
     $filePath = $projectPath . '/snippets.html';
+} elseif ($page === 'palette') {
+    $filePath = $projectPath . '/palette.html';
 } else {
     $filePath = $projectPath . '/pages/' . $page . '.html';
 }
