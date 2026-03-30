@@ -238,6 +238,17 @@
       // Inject HTML first
       contentBody.innerHTML = data.html;
 
+      // Extra CSS (snippets) — load/unload per page
+      var existingExtra = document.getElementById('project-style-extra');
+      if (existingExtra) existingExtra.remove();
+      if (data.extraCssPath) {
+        var extraLink = document.createElement('link');
+        extraLink.rel = 'stylesheet';
+        extraLink.id = 'project-style-extra';
+        extraLink.href = data.extraCssPath + '?t=' + Date.now();
+        document.head.appendChild(extraLink);
+      }
+
       // Swap assets if project changed or first load
       var needsAssets = !currentPageSlug || projectStyleEl === null;
       if (needsAssets) {

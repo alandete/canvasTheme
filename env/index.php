@@ -279,6 +279,8 @@
     </div>
   </div>
 
+  <script src="/env/js/chroma.min.js"></script>
+  <script src="/env/js/palette-generator.js"></script>
   <script src="/env/js/canvas-env.js"></script>
 </body>
 </html>

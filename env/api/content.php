@@ -54,12 +54,22 @@ if (file_exists($masterFile)) {
     $cssDesktopPath = file_exists($desktopFile) ? $basePath . '/css/' . basename($desktopFile) : null;
 }
 
+// Extra CSS for snippets/palette pages
+$extraCssPath = null;
+if ($page === 'snippets') {
+    $snippetsCss = $projectPath . '/css/' . $project . '-snippets.css';
+    if (file_exists($snippetsCss)) {
+        $extraCssPath = $basePath . '/css/' . $project . '-snippets.css';
+    }
+}
+
 $result = [
     'html'           => $html,
     'project'        => $project,
     'page'           => $page,
     'cssPath'        => $cssPath,
     'cssDesktopPath' => $cssDesktopPath,
+    'extraCssPath'   => $extraCssPath,
     'jsPath'         => file_exists($projectPath . '/js/' . $project . '-scripts.js')
                         ? $basePath . '/js/' . $project . '-scripts.js'
                         : (file_exists($projectPath . '/js/scripts.js') ? $basePath . '/js/scripts.js' : null)

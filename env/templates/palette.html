@@ -1,107 +1,53 @@
 <style>
   .palette { max-width: 960px; margin: 0 auto; font-family: inherit; }
 
-  /* Tabs — CSS only with radio inputs */
+  /* Tabs */
   .palette-tab-input { display: none; }
-  .palette-tabs { display: flex; gap: 0; border-bottom: 2px solid var(--ct-border); margin-bottom: 1.5rem; overflow-x: auto; }
-  .palette-tabs label { padding: 10px 18px; font-size: .85rem; font-weight: 600; color: var(--ct-text-muted); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; white-space: nowrap; transition: color .2s, border-color .2s; }
-  .palette-tabs label:hover { color: var(--ct-text); }
+  .palette-tabs { display: flex; gap: 0; border-bottom: 2px solid var(--ct-border, #ddd); margin-bottom: 1.5rem; overflow-x: auto; }
+  .palette-tabs label { padding: 10px 18px; font-size: .85rem; font-weight: 600; color: #999; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; white-space: nowrap; transition: color .2s, border-color .2s; }
+  .palette-tabs label:hover { color: #555; }
   .palette-panel { display: none; }
 
   #palette-tab-colors:checked ~ .palette-tabs label[for="palette-tab-colors"],
   #palette-tab-tokens:checked ~ .palette-tabs label[for="palette-tab-tokens"],
   #palette-tab-buttons:checked ~ .palette-tabs label[for="palette-tab-buttons"],
   #palette-tab-structures:checked ~ .palette-tabs label[for="palette-tab-structures"] {
-    color: var(--ct-link); border-bottom-color: var(--ct-link);
+    color: var(--ct-primary, #0374B5); border-bottom-color: var(--ct-primary, #0374B5);
   }
-
   #palette-tab-colors:checked ~ .palette-panels #panel-colors,
   #palette-tab-tokens:checked ~ .palette-panels #panel-tokens,
   #palette-tab-buttons:checked ~ .palette-panels #panel-buttons,
-  #palette-tab-structures:checked ~ .palette-panels #panel-structures {
-    display: block;
-  }
+  #palette-tab-structures:checked ~ .palette-panels #panel-structures { display: block; }
 
-  .palette h2 { font-size: 1.2rem; margin: 1.5rem 0 .5rem; color: var(--ct-text); }
-  .palette h3 { font-size: .95rem; margin: 1.2rem 0 .5rem; color: var(--ct-text-secondary); }
+  .palette h2 { font-size: 1.15rem; margin: 1.5rem 0 .75rem; color: #333; }
   .palette-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; margin-bottom: 1.5rem; }
-  .palette-swatch { border-radius: var(--ct-radius); overflow: hidden; border: 1px solid var(--ct-border); }
-  .palette-swatch-color { height: 64px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; }
-  .palette-swatch-label { padding: 6px; font-size: .7rem; background: var(--ct-bg-raised); color: var(--ct-text-secondary); text-align: center; }
-  .palette-swatch-label code { font-size: .65rem; display: block; margin-top: 2px; color: var(--ct-text-muted); }
-  .palette-tokens { display: flex; flex-direction: column; gap: 6px; margin-bottom: 1.5rem; }
-  .palette-token { display: flex; align-items: center; gap: 12px; padding: 8px 12px; border-radius: var(--ct-radius-sm); border: 1px solid var(--ct-border); }
-  .palette-token-dot { width: 28px; height: 28px; border-radius: var(--ct-radius-sm); flex-shrink: 0; border: 1px solid var(--ct-border); }
-  .palette-token-info { flex: 1; }
-  .palette-token-name { font-size: .85rem; font-weight: 600; color: var(--ct-text); }
-  .palette-token-var { font-size: .7rem; color: var(--ct-text-muted); font-family: monospace; }
-  .palette-btn-row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 1.5rem; align-items: center; }
-  .palette-btn { display: inline-flex; align-items: center; gap: 8px; padding: 9px 18px; border: none; border-radius: var(--ct-radius); font-size: .85rem; font-weight: 600; cursor: default; text-decoration: none; }
-  .palette-btn-outline { background: transparent; border: 1px solid; }
-  .palette-token-label { font-size: .75rem; font-family: monospace; color: var(--ct-text-secondary); margin-top: 6px; line-height: 1.4; }
+  .palette-swatch { border-radius: 8px; overflow: hidden; border: 1px solid #e0e0e0; }
+  .palette-swatch-color { height: 56px; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: .85rem; }
+  .palette-swatch-info { padding: 8px; font-size: .75rem; background: #fafafa; }
+  .palette-swatch-info .swatch-name { font-weight: 600; color: #333; }
+  .palette-swatch-info .swatch-var { font-family: monospace; font-size: .65rem; color: #888; display: block; margin-top: 2px; }
+  .palette-swatch-info .swatch-contrast { font-size: .7rem; margin-top: 6px; padding: 3px 8px; border-radius: 4px; display: inline-block; font-weight: 600; }
+  .swatch-contrast { font-size: .7rem; padding: 3px 8px; border-radius: 4px; display: inline-block; font-weight: 600; }
+  .swatch-contrast.pass { background: #E8F5E9; color: #2E7D32; border: 1px solid #A5D6A7; }
+  .swatch-contrast.fail { background: #FFEBEE; color: #C62828; border: 1px solid #EF9A9A; }
 
-  /* Dark mode forced container */
-  .palette-dark {
-    --ct-primary-light: color-mix(in oklch, var(--ct-primary-base) 50%, white);
-    --ct-primary:       color-mix(in oklch, var(--ct-primary-base) 65%, white);
-    --ct-primary-dark:  color-mix(in oklch, var(--ct-primary-base) 85%, white);
-    --ct-secondary-light: color-mix(in oklch, var(--ct-secondary-base) 40%, white);
-    --ct-secondary:       color-mix(in oklch, var(--ct-secondary-base) 55%, white);
-    --ct-secondary-dark:  color-mix(in oklch, var(--ct-secondary-base) 75%, white);
-    --ct-bg:        var(--ct-neutral-900);
-    --ct-bg-raised: var(--ct-neutral-800);
-    --ct-bg-subtle: var(--ct-neutral-800);
-    --ct-bg-muted:  var(--ct-neutral-700);
-    --ct-bg-accent: color-mix(in oklch, var(--ct-primary) 10%, var(--ct-bg));
-    --ct-text:           var(--ct-neutral-050);
-    --ct-text-secondary: var(--ct-neutral-300);
-    --ct-text-muted:     var(--ct-neutral-500);
-    --ct-text-inverse:   var(--ct-neutral-950);
-    --ct-link:       var(--ct-primary);
-    --ct-link-hover: var(--ct-primary-light);
-    --ct-border:        var(--ct-neutral-700);
-    --ct-border-strong: var(--ct-neutral-600);
-    --ct-btn-primary-bg:     var(--ct-primary);
-    --ct-btn-primary-hover:  color-mix(in oklch, var(--ct-primary) 82%, white);
-    --ct-btn-primary-active: color-mix(in oklch, var(--ct-primary) 70%, white);
-    --ct-btn-secondary-bg:     var(--ct-secondary);
-    --ct-btn-secondary-hover:  color-mix(in oklch, var(--ct-secondary) 82%, white);
-    --ct-btn-secondary-active: color-mix(in oklch, var(--ct-secondary) 70%, white);
-    --ct-btn-outline-hover-bg: color-mix(in oklch, var(--ct-primary) 15%, transparent);
-    --ct-btn-outline-active-bg:color-mix(in oklch, var(--ct-primary) 25%, transparent);
-    --ct-btn-outline-text:     var(--ct-primary);
-    --ct-btn-outline-border:   var(--ct-primary);
-    --ct-focus-ring: color-mix(in oklch, var(--ct-primary) 50%, transparent);
-    --ct-shadow-soft: 0 4px 6px -2px color-mix(in oklch, var(--ct-neutral-950) 25%, transparent);
-    --ct-shadow-hard: 0 8px 16px -4px color-mix(in oklch, var(--ct-neutral-950) 50%, transparent);
-  }
+  .palette-row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 1.5rem; }
+  .palette-btn-demo { padding: 10px 20px; border-radius: 8px; font-size: .85rem; font-weight: 600; border: none; cursor: default; text-align: center; }
+  .palette-btn-demo small { display: block; font-weight: 400; font-size: .7rem; margin-top: 4px; opacity: .7; }
 
-  /* Structures */
   .palette-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 1.5rem; }
   @media (max-width: 640px) { .palette-compare { grid-template-columns: 1fr; } }
-  .palette-preview { padding: 20px; border-radius: var(--ct-radius-lg); border: 1px solid var(--ct-border); }
-  .palette-preview-label { font-size: .65rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 14px; opacity: .5; }
-  .palette-card { background: var(--ct-bg-raised); border: 1px solid var(--ct-border); border-radius: var(--ct-radius); padding: 18px; }
-  .palette-card h4 { margin: 0 0 6px; color: var(--ct-link); font-size: 1rem; }
-  .palette-card p { margin: 0 0 10px; color: var(--ct-text-secondary); font-size: .85rem; line-height: 1.5; }
-  .palette-section-header { display: flex; align-items: center; gap: 10px; padding: 14px; background: var(--ct-bg-subtle); border-radius: var(--ct-radius); margin-bottom: 10px; }
-  .palette-section-header i { font-size: 1.2rem; color: var(--ct-link); }
-  .palette-section-header-text h4 { margin: 0; font-size: .95rem; color: var(--ct-text); }
-  .palette-section-header-text p { margin: 3px 0 0; font-size: .75rem; color: var(--ct-text-secondary); }
-  .palette-banner { background: var(--ct-btn-primary-bg); color: var(--ct-btn-primary-text); padding: 20px; border-radius: var(--ct-radius); text-align: center; }
-  .palette-banner h4 { margin: 0 0 4px; font-size: 1.1rem; }
-  .palette-banner p { margin: 0 0 14px; font-size: .8rem; opacity: .85; }
+  .palette-preview { padding: 20px; border-radius: 12px; border: 1px solid #e0e0e0; }
+  .palette-mode-label { font-size: .75rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 14px; }
 </style>
 
 <div class="palette">
 
-  <!-- Radio inputs (hidden) -->
   <input type="radio" name="palette-tab" id="palette-tab-colors" class="palette-tab-input" checked>
   <input type="radio" name="palette-tab" id="palette-tab-tokens" class="palette-tab-input">
   <input type="radio" name="palette-tab" id="palette-tab-buttons" class="palette-tab-input">
   <input type="radio" name="palette-tab" id="palette-tab-structures" class="palette-tab-input">
 
-  <!-- Tab labels -->
   <nav class="palette-tabs">
     <label for="palette-tab-colors">Colores</label>
     <label for="palette-tab-tokens">Tokens</label>
@@ -109,219 +55,10 @@
     <label for="palette-tab-structures">Estructuras</label>
   </nav>
 
-  <!-- Tab panels -->
   <div class="palette-panels">
-
-    <!-- ═══════════ TAB 1: COLORES ═══════════ -->
-    <div class="palette-panel" id="panel-colors">
-      <h2>Colores base</h2>
-      <div class="palette-grid">
-        <div class="palette-swatch"><div class="palette-swatch-color" style="background: var(--ct-primary-base); color: white;"><i class="bi bi-circle-fill"></i></div><div class="palette-swatch-label">Primario<code>--ct-primary-base</code></div></div>
-        <div class="palette-swatch"><div class="palette-swatch-color" style="background: var(--ct-secondary-base); color: white;"><i class="bi bi-circle-fill"></i></div><div class="palette-swatch-label">Secundario<code>--ct-secondary-base</code></div></div>
-      </div>
-
-      <h2>Escala primario</h2>
-      <div class="palette-grid">
-        <div class="palette-swatch"><div class="palette-swatch-color" style="background: var(--ct-primary-light); color: var(--ct-neutral-950);"><i class="bi bi-brightness-high"></i></div><div class="palette-swatch-label">Light<code>--ct-primary-light</code></div></div>
-        <div class="palette-swatch"><div class="palette-swatch-color" style="background: var(--ct-primary); color: white;"><i class="bi bi-circle-fill"></i></div><div class="palette-swatch-label">Primary<code>--ct-primary</code></div></div>
-        <div class="palette-swatch"><div class="palette-swatch-color" style="background: var(--ct-primary-dark); color: white;"><i class="bi bi-moon-fill"></i></div><div class="palette-swatch-label">Dark<code>--ct-primary-dark</code></div></div>
-      </div>
-
-      <h2>Escala secundario</h2>
-      <div class="palette-grid">
-        <div class="palette-swatch"><div class="palette-swatch-color" style="background: var(--ct-secondary-light); color: var(--ct-neutral-950);"><i class="bi bi-brightness-high"></i></div><div class="palette-swatch-label">Light<code>--ct-secondary-light</code></div></div>
-        <div class="palette-swatch"><div class="palette-swatch-color" style="background: var(--ct-secondary); color: white;"><i class="bi bi-circle-fill"></i></div><div class="palette-swatch-label">Secondary<code>--ct-secondary</code></div></div>
-        <div class="palette-swatch"><div class="palette-swatch-color" style="background: var(--ct-secondary-dark); color: white;"><i class="bi bi-moon-fill"></i></div><div class="palette-swatch-label">Dark<code>--ct-secondary-dark</code></div></div>
-      </div>
-
-      <h2>Neutros tintados</h2>
-      <div class="palette-grid">
-        <div class="palette-swatch"><div class="palette-swatch-color" style="background: var(--ct-neutral-000); color: var(--ct-neutral-950);"><small>Aa</small></div><div class="palette-swatch-label">000<code>--ct-neutral-000</code></div></div>
-        <div class="palette-swatch"><div class="palette-swatch-color" style="background: var(--ct-neutral-050); color: var(--ct-neutral-950);"><small>Aa</small></div><div class="palette-swatch-label">050<code>--ct-neutral-050</code></div></div>
-        <div class="palette-swatch"><div class="palette-swatch-color" style="background: var(--ct-neutral-100); color: var(--ct-neutral-950);"><small>Aa</small></div><div class="palette-swatch-label">100<code>--ct-neutral-100</code></div></div>
-        <div class="palette-swatch"><div class="palette-swatch-color" style="background: var(--ct-neutral-200); color: var(--ct-neutral-950);"><small>Aa</small></div><div class="palette-swatch-label">200<code>--ct-neutral-200</code></div></div>
-        <div class="palette-swatch"><div class="palette-swatch-color" style="background: var(--ct-neutral-300); color: var(--ct-neutral-950);"><small>Aa</small></div><div class="palette-swatch-label">300<code>--ct-neutral-300</code></div></div>
-        <div class="palette-swatch"><div class="palette-swatch-color" style="background: var(--ct-neutral-400); color: var(--ct-neutral-000);"><small>Aa</small></div><div class="palette-swatch-label">400<code>--ct-neutral-400</code></div></div>
-        <div class="palette-swatch"><div class="palette-swatch-color" style="background: var(--ct-neutral-500); color: var(--ct-neutral-000);"><small>Aa</small></div><div class="palette-swatch-label">500<code>--ct-neutral-500</code></div></div>
-        <div class="palette-swatch"><div class="palette-swatch-color" style="background: var(--ct-neutral-600); color: var(--ct-neutral-000);"><small>Aa</small></div><div class="palette-swatch-label">600<code>--ct-neutral-600</code></div></div>
-        <div class="palette-swatch"><div class="palette-swatch-color" style="background: var(--ct-neutral-700); color: var(--ct-neutral-000);"><small>Aa</small></div><div class="palette-swatch-label">700<code>--ct-neutral-700</code></div></div>
-        <div class="palette-swatch"><div class="palette-swatch-color" style="background: var(--ct-neutral-800); color: var(--ct-neutral-000);"><small>Aa</small></div><div class="palette-swatch-label">800<code>--ct-neutral-800</code></div></div>
-        <div class="palette-swatch"><div class="palette-swatch-color" style="background: var(--ct-neutral-900); color: var(--ct-neutral-000);"><small>Aa</small></div><div class="palette-swatch-label">900<code>--ct-neutral-900</code></div></div>
-        <div class="palette-swatch"><div class="palette-swatch-color" style="background: var(--ct-neutral-950); color: var(--ct-neutral-000);"><small>Aa</small></div><div class="palette-swatch-label">950<code>--ct-neutral-950</code></div></div>
-      </div>
-    </div>
-
-    <!-- ═══════════ TAB 2: TOKENS ═══════════ -->
-    <div class="palette-panel" id="panel-tokens">
-      <h2>Fondos</h2>
-      <div class="palette-grid">
-        <div class="palette-swatch"><div class="palette-swatch-color" style="background: var(--ct-bg); color: var(--ct-text);"><small>Aa</small></div><div class="palette-swatch-label">Body<code>--ct-bg</code></div></div>
-        <div class="palette-swatch"><div class="palette-swatch-color" style="background: var(--ct-bg-raised); color: var(--ct-text);"><small>Aa</small></div><div class="palette-swatch-label">Raised<code>--ct-bg-raised</code></div></div>
-        <div class="palette-swatch"><div class="palette-swatch-color" style="background: var(--ct-bg-subtle); color: var(--ct-text);"><small>Aa</small></div><div class="palette-swatch-label">Subtle<code>--ct-bg-subtle</code></div></div>
-        <div class="palette-swatch"><div class="palette-swatch-color" style="background: var(--ct-bg-muted); color: var(--ct-text);"><small>Aa</small></div><div class="palette-swatch-label">Muted<code>--ct-bg-muted</code></div></div>
-        <div class="palette-swatch"><div class="palette-swatch-color" style="background: var(--ct-bg-accent); color: var(--ct-text);"><small>Aa</small></div><div class="palette-swatch-label">Accent<code>--ct-bg-accent</code></div></div>
-      </div>
-
-      <h2>Texto</h2>
-      <div class="palette-tokens">
-        <div class="palette-token"><div class="palette-token-dot" style="background: var(--ct-text);"></div><div class="palette-token-info"><div class="palette-token-name" style="color: var(--ct-text);">Texto principal &mdash; Aa Bb Cc 123</div><div class="palette-token-var">--ct-text</div></div></div>
-        <div class="palette-token"><div class="palette-token-dot" style="background: var(--ct-text-secondary);"></div><div class="palette-token-info"><div class="palette-token-name" style="color: var(--ct-text-secondary);">Texto secundario &mdash; Aa Bb Cc 123</div><div class="palette-token-var">--ct-text-secondary</div></div></div>
-        <div class="palette-token"><div class="palette-token-dot" style="background: var(--ct-text-muted);"></div><div class="palette-token-info"><div class="palette-token-name" style="color: var(--ct-text-muted);">Texto muted &mdash; Aa Bb Cc 123</div><div class="palette-token-var">--ct-text-muted</div></div></div>
-        <div class="palette-token"><div class="palette-token-dot" style="background: var(--ct-text-inverse); border-color: var(--ct-neutral-300);"></div><div class="palette-token-info"><div class="palette-token-name">Texto inverso (sobre fondos oscuros)</div><div class="palette-token-var">--ct-text-inverse</div></div></div>
-      </div>
-
-      <h2>Enlaces</h2>
-      <div class="palette-tokens">
-        <div class="palette-token"><div class="palette-token-dot" style="background: var(--ct-link);"></div><div class="palette-token-info"><div class="palette-token-name"><span style="color: var(--ct-link); text-decoration: underline;">Enlace de ejemplo</span></div><div class="palette-token-var">--ct-link</div></div></div>
-        <div class="palette-token"><div class="palette-token-dot" style="background: var(--ct-link-hover);"></div><div class="palette-token-info"><div class="palette-token-name"><span style="color: var(--ct-link-hover); text-decoration: underline;">Enlace hover</span></div><div class="palette-token-var">--ct-link-hover</div></div></div>
-      </div>
-
-      <h2>Bordes</h2>
-      <div class="palette-tokens">
-        <div class="palette-token"><div class="palette-token-dot" style="background: transparent; border: 2px solid var(--ct-border);"></div><div class="palette-token-info"><div class="palette-token-name">Borde normal</div><div class="palette-token-var">--ct-border</div></div></div>
-        <div class="palette-token"><div class="palette-token-dot" style="background: transparent; border: 2px solid var(--ct-border-strong);"></div><div class="palette-token-info"><div class="palette-token-name">Borde fuerte</div><div class="palette-token-var">--ct-border-strong</div></div></div>
-      </div>
-
-      <h2>Focus y sombras</h2>
-      <div class="palette-btn-row">
-        <span class="palette-btn" style="background: var(--ct-btn-primary-bg); color: var(--ct-btn-primary-text); box-shadow: 0 0 0 3px var(--ct-focus-ring);">Focus ring</span>
-        <span class="palette-btn" style="background: var(--ct-bg-raised); color: var(--ct-text); box-shadow: var(--ct-shadow-soft);">Shadow soft</span>
-        <span class="palette-btn" style="background: var(--ct-bg-raised); color: var(--ct-text); box-shadow: var(--ct-shadow-hard);">Shadow hard</span>
-      </div>
-    </div>
-
-    <!-- ═══════════ TAB 3: BOTONES ═══════════ -->
-    <div class="palette-panel" id="panel-buttons">
-      <h2>Primario</h2>
-      <div class="palette-btn-row">
-        <div style="text-align:center;"><span class="palette-btn" style="background: var(--ct-btn-primary-bg); color: var(--ct-btn-primary-text);">Normal</span><div class="palette-token-label">--ct-btn-primary-bg<br>--ct-btn-primary-text</div></div>
-        <div style="text-align:center;"><span class="palette-btn" style="background: var(--ct-btn-primary-hover); color: var(--ct-btn-primary-text);">Hover</span><div class="palette-token-label">--ct-btn-primary-hover</div></div>
-        <div style="text-align:center;"><span class="palette-btn" style="background: var(--ct-btn-primary-active); color: var(--ct-btn-primary-text);">Active</span><div class="palette-token-label">--ct-btn-primary-active</div></div>
-      </div>
-
-      <h2>Secundario</h2>
-      <div class="palette-btn-row">
-        <div style="text-align:center;"><span class="palette-btn" style="background: var(--ct-btn-secondary-bg); color: var(--ct-btn-secondary-text);">Normal</span><div class="palette-token-label">--ct-btn-secondary-bg<br>--ct-btn-secondary-text</div></div>
-        <div style="text-align:center;"><span class="palette-btn" style="background: var(--ct-btn-secondary-hover); color: var(--ct-btn-secondary-text);">Hover</span><div class="palette-token-label">--ct-btn-secondary-hover</div></div>
-        <div style="text-align:center;"><span class="palette-btn" style="background: var(--ct-btn-secondary-active); color: var(--ct-btn-secondary-text);">Active</span><div class="palette-token-label">--ct-btn-secondary-active</div></div>
-      </div>
-
-      <h2>Outline</h2>
-      <div class="palette-btn-row">
-        <div style="text-align:center;"><span class="palette-btn palette-btn-outline" style="color: var(--ct-btn-outline-text); border-color: var(--ct-btn-outline-border);">Normal</span><div class="palette-token-label">--ct-btn-outline-border<br>--ct-btn-outline-text</div></div>
-        <div style="text-align:center;"><span class="palette-btn palette-btn-outline" style="color: var(--ct-btn-outline-text); border-color: var(--ct-btn-outline-border); background: var(--ct-btn-outline-hover-bg);">Hover</span><div class="palette-token-label">--ct-btn-outline-hover-bg</div></div>
-        <div style="text-align:center;"><span class="palette-btn palette-btn-outline" style="color: var(--ct-btn-outline-text); border-color: var(--ct-btn-outline-border); background: var(--ct-btn-outline-active-bg);">Active</span><div class="palette-token-label">--ct-btn-outline-active-bg</div></div>
-      </div>
-
-      <h2>Dark mode</h2>
-      <div class="palette-dark" style="background: var(--ct-bg); padding: 20px; border-radius: var(--ct-radius-lg); border: 1px solid var(--ct-border);">
-        <h3 style="color: var(--ct-text-secondary); margin-top: 0;">Primario</h3>
-        <div class="palette-btn-row">
-          <div style="text-align:center;"><span class="palette-btn" style="background: var(--ct-btn-primary-bg); color: var(--ct-btn-primary-text);">Normal</span><div class="palette-token-label" style="color: var(--ct-text-secondary);">--ct-btn-primary-bg</div></div>
-          <div style="text-align:center;"><span class="palette-btn" style="background: var(--ct-btn-primary-hover); color: var(--ct-btn-primary-text);">Hover</span><div class="palette-token-label" style="color: var(--ct-text-secondary);">--ct-btn-primary-hover</div></div>
-          <div style="text-align:center;"><span class="palette-btn" style="background: var(--ct-btn-primary-active); color: var(--ct-btn-primary-text);">Active</span><div class="palette-token-label" style="color: var(--ct-text-secondary);">--ct-btn-primary-active</div></div>
-        </div>
-        <h3 style="color: var(--ct-text-secondary);">Secundario</h3>
-        <div class="palette-btn-row">
-          <div style="text-align:center;"><span class="palette-btn" style="background: var(--ct-btn-secondary-bg); color: var(--ct-btn-secondary-text);">Normal</span><div class="palette-token-label" style="color: var(--ct-text-secondary);">--ct-btn-secondary-bg</div></div>
-          <div style="text-align:center;"><span class="palette-btn" style="background: var(--ct-btn-secondary-hover); color: var(--ct-btn-secondary-text);">Hover</span><div class="palette-token-label" style="color: var(--ct-text-secondary);">--ct-btn-secondary-hover</div></div>
-          <div style="text-align:center;"><span class="palette-btn" style="background: var(--ct-btn-secondary-active); color: var(--ct-btn-secondary-text);">Active</span><div class="palette-token-label" style="color: var(--ct-text-secondary);">--ct-btn-secondary-active</div></div>
-        </div>
-        <h3 style="color: var(--ct-text-secondary);">Outline</h3>
-        <div class="palette-btn-row" style="margin-bottom: 0;">
-          <div style="text-align:center;"><span class="palette-btn palette-btn-outline" style="color: var(--ct-btn-outline-text); border-color: var(--ct-btn-outline-border);">Normal</span><div class="palette-token-label" style="color: var(--ct-text-secondary);">--ct-btn-outline-*</div></div>
-          <div style="text-align:center;"><span class="palette-btn palette-btn-outline" style="color: var(--ct-btn-outline-text); border-color: var(--ct-btn-outline-border); background: var(--ct-btn-outline-hover-bg);">Hover</span><div class="palette-token-label" style="color: var(--ct-text-secondary);">--ct-btn-outline-hover-bg</div></div>
-          <div style="text-align:center;"><span class="palette-btn palette-btn-outline" style="color: var(--ct-btn-outline-text); border-color: var(--ct-btn-outline-border); background: var(--ct-btn-outline-active-bg);">Active</span><div class="palette-token-label" style="color: var(--ct-text-secondary);">--ct-btn-outline-active-bg</div></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ═══════════ TAB 4: ESTRUCTURAS ═══════════ -->
-    <div class="palette-panel" id="panel-structures">
-      <h2>Tarjeta informativa</h2>
-      <div class="palette-compare">
-        <div class="palette-preview" style="background: var(--ct-bg);">
-          <div class="palette-preview-label" style="color: var(--ct-text-muted);">Light</div>
-          <div class="palette-card" style="box-shadow: var(--ct-shadow-soft);">
-            <h4>T&iacute;tulo de la tarjeta <code style="font-size:.7rem;font-weight:400;color:var(--ct-text-secondary);">--ct-link</code></h4>
-            <p>Descripci&oacute;n breve del contenido. <code style="font-size:.7rem;color:var(--ct-text-secondary);">--ct-text-secondary</code></p>
-            <div class="palette-btn-row" style="margin: 0;">
-              <span class="palette-btn" style="background: var(--ct-btn-primary-bg); color: var(--ct-btn-primary-text); font-size: .8rem;">Primario</span>
-              <span class="palette-btn palette-btn-outline" style="color: var(--ct-btn-outline-text); border-color: var(--ct-btn-outline-border); font-size: .8rem;">Outline</span>
-            </div>
-          </div>
-          <div style="margin-top:8px; font-size:.75rem; color: var(--ct-text-secondary);">Fondo tarjeta: <code>--ct-bg-raised</code> &middot; Borde: <code>--ct-border</code> &middot; Sombra: <code>--ct-shadow-soft</code></div>
-        </div>
-        <div class="palette-preview palette-dark" style="background: var(--ct-bg);">
-          <div class="palette-preview-label" style="color: var(--ct-text-muted);">Dark</div>
-          <div class="palette-card" style="box-shadow: var(--ct-shadow-soft); border-color: var(--ct-border-strong);">
-            <h4>T&iacute;tulo de la tarjeta <code style="font-size:.7rem;font-weight:400;color:var(--ct-text-secondary);">--ct-link</code></h4>
-            <p>Descripci&oacute;n breve del contenido. <code style="font-size:.7rem;color:var(--ct-text-secondary);">--ct-text-secondary</code></p>
-            <div class="palette-btn-row" style="margin: 0;">
-              <span class="palette-btn" style="background: var(--ct-btn-primary-bg); color: var(--ct-btn-primary-text); font-size: .8rem;">Primario</span>
-              <span class="palette-btn palette-btn-outline" style="color: var(--ct-btn-outline-text); border-color: var(--ct-btn-outline-border); font-size: .8rem;">Outline</span>
-            </div>
-          </div>
-          <div style="margin-top:8px; font-size:.75rem; color: var(--ct-text-secondary);">Fondo: <code>--ct-bg-raised</code> (neutral-800) &middot; Borde: <code>--ct-border-strong</code></div>
-        </div>
-      </div>
-
-      <h2>Secci&oacute;n de contenido</h2>
-      <div class="palette-compare">
-        <div class="palette-preview" style="background: var(--ct-bg-subtle);">
-          <div class="palette-preview-label" style="color: var(--ct-text-muted);">Light &middot; Fondo: <code>--ct-bg-subtle</code></div>
-          <div class="palette-section-header">
-            <i class="bi bi-lightbulb"></i>
-            <div class="palette-section-header-text"><h4>Introducci&oacute;n a la semana</h4><p>Lo que exploraremos juntos</p></div>
-          </div>
-          <div style="padding: 0 14px;">
-            <p style="color: var(--ct-text); font-size: .85rem; line-height: 1.6; margin: 0 0 6px;">Texto de cuerpo con <code style="font-size:.7rem;color:var(--ct-text-secondary);">--ct-text</code></p>
-            <span style="color: var(--ct-link); font-size: .8rem;">Enlace &rarr; <code style="font-size:.7rem;color:var(--ct-text-secondary);">--ct-link</code></span>
-          </div>
-          <div style="margin-top:10px; font-size:.75rem; color: var(--ct-text-secondary); padding: 0 14px;">&Iacute;cono: <code>--ct-link</code> &middot; T&iacute;tulo: <code>--ct-text</code> &middot; Desc: <code>--ct-text-secondary</code></div>
-        </div>
-        <div class="palette-preview palette-dark" style="background: var(--ct-bg-subtle);">
-          <div class="palette-preview-label" style="color: var(--ct-text-muted);">Dark &middot; Fondo: <code>--ct-bg-subtle</code></div>
-          <div class="palette-section-header">
-            <i class="bi bi-lightbulb"></i>
-            <div class="palette-section-header-text"><h4>Introducci&oacute;n a la semana</h4><p>Lo que exploraremos juntos</p></div>
-          </div>
-          <div style="padding: 0 14px;">
-            <p style="color: var(--ct-text); font-size: .85rem; line-height: 1.6; margin: 0 0 6px;">Texto de cuerpo con <code style="font-size:.7rem;color:var(--ct-text-secondary);">--ct-text</code></p>
-            <span style="color: var(--ct-link); font-size: .8rem;">Enlace &rarr; <code style="font-size:.7rem;color:var(--ct-text-secondary);">--ct-link</code></span>
-          </div>
-          <div style="margin-top:10px; font-size:.75rem; color: var(--ct-text-secondary); padding: 0 14px;">&Iacute;cono: <code>--ct-link</code> &middot; T&iacute;tulo: <code>--ct-text</code> &middot; Desc: <code>--ct-text-secondary</code></div>
-        </div>
-      </div>
-
-      <h2>Banner de acci&oacute;n</h2>
-      <div class="palette-compare">
-        <div class="palette-preview" style="background: var(--ct-bg);">
-          <div class="palette-preview-label" style="color: var(--ct-text-muted);">Light</div>
-          <div class="palette-banner">
-            <h4>Open Class &mdash; Semana 2</h4>
-            <p>Sesi&oacute;n sincr&oacute;nica con el docente</p>
-            <div class="palette-btn-row" style="margin: 0; justify-content: center;">
-              <span class="palette-btn" style="background: var(--ct-neutral-000); color: var(--ct-btn-primary-bg); font-size: .8rem;">Unirse</span>
-              <span class="palette-btn palette-btn-outline" style="color: var(--ct-neutral-000); border-color: rgba(255,255,255,.5); font-size: .8rem;">Ver grabaci&oacute;n</span>
-            </div>
-          </div>
-          <div style="margin-top:8px; font-size:.75rem; color: var(--ct-text-secondary);">Fondo: <code>--ct-btn-primary-bg</code> &middot; Texto: <code>--ct-btn-primary-text</code> &middot; Bot&oacute;n inv: <code>--ct-neutral-000</code></div>
-        </div>
-        <div class="palette-preview palette-dark" style="background: var(--ct-bg);">
-          <div class="palette-preview-label" style="color: var(--ct-text-muted);">Dark</div>
-          <div class="palette-banner">
-            <h4>Open Class &mdash; Semana 2</h4>
-            <p>Sesi&oacute;n sincr&oacute;nica con el docente</p>
-            <div class="palette-btn-row" style="margin: 0; justify-content: center;">
-              <span class="palette-btn" style="background: var(--ct-neutral-000); color: var(--ct-btn-primary-bg); font-size: .8rem;">Unirse</span>
-              <span class="palette-btn palette-btn-outline" style="color: var(--ct-neutral-000); border-color: rgba(255,255,255,.5); font-size: .8rem;">Ver grabaci&oacute;n</span>
-            </div>
-          </div>
-          <div style="margin-top:8px; font-size:.75rem; color: var(--ct-text-secondary);">Fondo: <code>--ct-btn-primary-bg</code> &middot; Bot&oacute;n inv: <code>--ct-neutral-000</code> (dark = oscuro)</div>
-        </div>
-      </div>
-    </div>
-
-  </div><!-- .palette-panels -->
+    <div class="palette-panel" id="panel-colors"></div>
+    <div class="palette-panel" id="panel-tokens"></div>
+    <div class="palette-panel" id="panel-buttons"></div>
+    <div class="palette-panel" id="panel-structures"></div>
+  </div>
 </div>
