@@ -57,6 +57,9 @@
           <button id="btn-export" class="nav-tool-btn hidden" title="Exportar proyecto como ZIP">
             <i class="fas fa-file-archive"></i><span class="nav-label">Exportar</span>
           </button>
+          <button id="btn-a11y" class="nav-tool-btn" title="Evaluar accesibilidad">
+            <i class="fas fa-universal-access"></i><span class="nav-label">A11y</span>
+          </button>
         </div>
         <div class="nav-tools-separator"></div>
         <div class="nav-tools-group">
@@ -280,7 +283,21 @@
   </div>
 
   <script src="/env/js/chroma.min.js"></script>
+  <script src="/env/js/axe.min.js"></script>
   <script src="/env/js/palette-generator.js"></script>
+
+  <!-- Panel de accesibilidad -->
+  <div id="a11y-panel" class="a11y-panel hidden">
+    <div class="a11y-panel-header">
+      <h3><i class="fas fa-universal-access"></i> Accesibilidad</h3>
+      <button id="a11y-close" class="a11y-close"><i class="fas fa-times"></i></button>
+    </div>
+    <div id="a11y-results" class="a11y-results">
+      <p class="a11y-placeholder">Haz clic en el bot&oacute;n A11y para evaluar la p&aacute;gina actual.</p>
+    </div>
+  </div>
+
+  <script src="/env/js/a11y-checker.js"></script>
   <script src="/env/js/canvas-env.js"></script>
 </body>
 </html>
