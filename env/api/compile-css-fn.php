@@ -2,7 +2,11 @@
 /**
  * Compila mobile y desktop CSS desde el master de un proyecto.
  * Mobile: mantiene hasta 992px (elimina @media >= 1200px y html[data-theme="dark"])
- * Desktop: todo excepto html[data-theme="dark"]
+ * Desktop: todo excepto html[data-theme="dark"] Y @media (prefers-color-scheme: dark)
+ *
+ * Canvas LMS web no soporta dark mode nativo, por eso se elimina del desktop.
+ * En mobile se mantiene para que la app Canvas (iOS/Android) respete la
+ * preferencia del sistema operativo del usuario.
  */
 function compileCssFromMaster($projectPath, $slug) {
     $masterFile = $projectPath . '/css/' . $slug . '-master.css';
@@ -24,11 +28,27 @@ function compileCssFromMaster($projectPath, $slug) {
         $clean
     );
 
-    // ── Desktop: todo limpio ──
-    $desktop = preg_replace('/\n{3,}/', "\n\n", $clean);
+    // ── Desktop: eliminar también el bloque @media (prefers-color-scheme: dark) ──
+    // Canvas web no soporta dark mode, genera inconsistencia visual con el resto de la UI.
+    $desktop = $clean;
+
+    // Eliminar comentario + bloque @media (prefers-color-scheme: dark) { :root { ... } }
+    $desktop = preg_replace(
+        '!/\*[═\s]*DARK MODE\s*—\s*Canvas real[^*]*\*/\s*@media\s*\(\s*prefers-color-scheme\s*:\s*dark\s*\)\s*\{(?:[^{}]*|\{[^{}]*\})*\}\s*!s',
+        '',
+        $desktop
+    );
+    // Fallback: eliminar cualquier @media (prefers-color-scheme: dark) sin comentario
+    $desktop = preg_replace(
+        '/@media\s*\(\s*prefers-color-scheme\s*:\s*dark\s*\)\s*\{(?:[^{}]*|\{[^{}]*\})*\}\s*/s',
+        '',
+        $desktop
+    );
+
+    $desktop = preg_replace('/\n{3,}/', "\n\n", $desktop);
     $desktop = trim($desktop) . "\n";
 
-    // ── Mobile: eliminar @media >= 1200px ──
+    // ── Mobile: mantiene dark mode, elimina @media >= 1200px ──
     $mobile = $clean;
 
     // Eliminar @media con comentario (X-Large, XX-Large)

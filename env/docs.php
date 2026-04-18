@@ -40,6 +40,10 @@
         <li class="toc-title">Ambiente</li>
         <li><a href="#acceso" class="toc-link"><i class="fas fa-key"></i> Acceso y Usuarios</a></li>
         <li><a href="#flujo-trabajo" class="toc-link"><i class="fas fa-project-diagram"></i> Flujo de Trabajo</a></li>
+        <li class="toc-title">Dudas</li>
+        <li><a href="#pdf-mobile-app" class="toc-link"><i class="fas fa-mobile-alt"></i> PDF en App Móvil</a></li>
+        <li><a href="#ios-css-fixes" class="toc-link"><i class="fas fa-apple-alt"></i> CSS en iOS (WKWebView)</a></li>
+        <li><a href="#dark-mode-web-canvas" class="toc-link"><i class="fas fa-moon"></i> Dark mode en Canvas Web</a></li>
       </ul>
     </nav>
 
@@ -729,6 +733,356 @@ html[data-theme="dark"] {
           <li><code>--ct-gray-000</code> a <code>--ct-gray-1000</code> — paleta de grises con <code>color-mix()</code></li>
         </ul>
         <p>Para personalizar un proyecto, solo cambia los 5 valores <code>-base</code> al inicio del master. El dark mode, los grises y las sombras se adaptan solos.</p>
+      </section>
+
+      <!-- ════════════════════════════════════════ -->
+      <section id="pdf-mobile-app">
+        <h2><i class="fas fa-mobile-alt"></i> PDF embebido en App Móvil de Canvas</h2>
+
+        <div class="callout warning">
+          <i class="fas fa-exclamation-triangle"></i>
+          <div>
+            <strong>Problema conocido:</strong> Los PDF embebidos en iframes no funcionan correctamente en la app móvil de Canvas (iOS y Android). Instructure lo considera <strong>comportamiento esperado</strong>, no un bug.
+          </div>
+        </div>
+
+        <h3>¿Qué ocurre?</h3>
+        <p>La app de Canvas usa un WebView que intercepta cualquier URL <code>.pdf</code> cargada en un iframe y la abre en su visor nativo de documentos. Este visor muestra el PDF con una barra superior con la URL y una flecha para regresar.</p>
+        <p>Al presionar la flecha de regreso, la página se recarga, el iframe vuelve a solicitar el PDF, y el visor se abre nuevamente — generando un <strong>bucle infinito</strong>. El usuario debe presionar dos veces el botón de atrás para salir.</p>
+
+        <h3>¿Por qué ocurre?</h3>
+        <ul class="docs-list">
+          <li>Las apps Canvas Student (iOS y Android) usan <code>WKWebView</code> / <code>WebView</code> para renderizar páginas de contenido.</li>
+          <li>Un <em>navigation delegate</em> intercepta cualquier navegación a URLs con extensión <code>.pdf</code>, incluyendo las de sub-frames (iframes).</li>
+          <li>La navegación se redirige al visor nativo en lugar de renderizarse inline.</li>
+          <li>Esto afecta PDFs alojados en Canvas (<code>/files/</code>), Google Drive, y cualquier otra URL directa a PDF.</li>
+        </ul>
+
+        <h3>Soluciones evaluadas</h3>
+
+        <div class="practice-card bad">
+          <h4><i class="fas fa-times-circle"></i> No funcionan</h4>
+          <ul>
+            <li><code>&lt;object&gt;</code> o <code>&lt;embed&gt;</code> — Canvas los sanitiza o el WebView móvil no los soporta.</li>
+            <li>Atributo <code>sandbox</code> en el iframe — la intercepción ocurre a nivel del WebView, antes de que sandbox aplique.</li>
+            <li>URIs <code>data:</code> — bloqueados por la política de seguridad de contenido de Canvas.</li>
+            <li><strong>PDF.js</strong> — requiere JavaScript que Canvas no permite en páginas wiki.</li>
+            <li><strong>Detección por User-Agent</strong> (<code>candroid</code>, <code>CanvasStudent</code>, <code>iCanvas</code>) — requiere JS inline no permitido.</li>
+          </ul>
+        </div>
+
+        <div class="practice-card good">
+          <h4><i class="fas fa-check-circle"></i> Alternativas viables (con limitaciones)</h4>
+          <ul>
+            <li><strong>Enlace directo</strong> en lugar de iframe — evita el bucle porque el usuario navega intencionalmente. Es la recomendación oficial de la comunidad Canvas.</li>
+            <li><strong>Google Docs Viewer</strong> como wrapper (<code>https://docs.google.com/viewer?url=URL&amp;embedded=true</code>) — el iframe carga HTML, no PDF, así que la app no lo intercepta. <strong>Requiere que el PDF sea público.</strong></li>
+            <li><strong>Office 365 Viewer</strong> — mismo principio que Google Docs. <strong>Requiere acceso público al archivo.</strong></li>
+          </ul>
+        </div>
+
+        <h3>Decisión para nuestros proyectos</h3>
+        <div class="callout info">
+          <i class="fas fa-info-circle"></i>
+          <div>
+            Los wrappers de Google Docs y Office 365 requieren que el PDF sea accesible públicamente. En nuestros proyectos, los archivos están alojados en dominios con restricciones de acceso, por lo que <strong>ninguna de estas alternativas es viable</strong>.
+          </div>
+        </div>
+        <p>Se recomienda documentar esta limitación ante el equipo responsable como un comportamiento inherente de la app móvil de Canvas que no tiene solución técnica desde el diseño del contenido.</p>
+
+        <h3>Referencia</h3>
+        <ul class="docs-list">
+          <li>Código fuente de las apps: <code>instructure/canvas-ios</code> y <code>instructure/canvas-android</code> en GitHub (open source).</li>
+          <li>Hilos en la comunidad Canvas reportando este problema desde 2018-2019.</li>
+          <li>User-Agent de las apps: <code>CanvasStudent</code>, <code>candroid</code>, <code>CanvasTeacher</code>, <code>iCanvas</code>.</li>
+        </ul>
+      </section>
+
+      <!-- ════════════════════════════════════════ -->
+      <section id="ios-css-fixes">
+        <h2><i class="fas fa-apple-alt"></i> CSS en iOS — Canvas Student App (WKWebView)</h2>
+
+        <div class="callout warning">
+          <i class="fas fa-exclamation-triangle"></i>
+          <div>
+            <strong>Importante:</strong> No es posible emular iOS en Windows. Las pruebas deben realizarse en un <strong>dispositivo físico iOS</strong> (iPhone o iPad). No hay alternativa en Windows que replique el motor de renderizado de la app Canvas en iOS.
+          </div>
+        </div>
+
+        <h3>¿Por qué iOS se comporta diferente?</h3>
+        <p>La app Canvas Student en iOS usa un componente llamado <code>WKWebView</code> para mostrar las páginas del curso. Este componente usa el motor <strong>WebKit</strong> (el mismo de Safari). Aunque en teoría soporta las mismas propiedades CSS que Safari, en la práctica hay diferencias importantes en cómo calcula tamaños, posiciones y cómo maneja ciertos tipos de archivos (como PDFs).</p>
+        <p>El CSS que subimos al Theme Editor de Canvas se carga como hoja de estilos externa — <strong>no pasa por el sanitizador</strong> de Canvas. Esto significa que todas nuestras clases CSS funcionan sin restricción. El problema no es que Canvas bloquee algo, sino que el motor WebKit de iOS interpreta algunas propiedades de forma diferente a Chrome (Android/desktop).</p>
+
+        <h3>¿Cómo aplicamos correcciones solo para iOS?</h3>
+        <p>Usamos un truco CSS: la propiedad <code>-webkit-touch-callout</code> solo existe en iOS (Safari y WKWebView). Android Chrome no la reconoce. Al envolver nuestras correcciones en <code>@supports (-webkit-touch-callout: none)</code>, el CSS dentro de ese bloque <strong>solo se ejecuta en dispositivos iOS</strong>. Android y desktop lo ignoran completamente.</p>
+        <pre><code>@supports (-webkit-touch-callout: none) {
+  /* Todo lo que escribamos aquí SOLO aplica en iOS */
+  /* Android y desktop no ejecutan estas reglas */
+}</code></pre>
+
+        <h3>Problema 1: Imágenes de fondo no cubren todo el contenedor</h3>
+
+        <h4>¿Qué pasa?</h4>
+        <p>Tenemos banners y tarjetas con una imagen de fondo que debería cubrir todo el espacio del componente. En desktop y Android se ve perfecto. En iOS la imagen cubre el ancho pero <strong>no cubre la altura completa</strong> — queda un espacio vacío abajo donde se ve el color de fondo del contenedor.</p>
+
+        <h4>¿Por qué pasa?</h4>
+        <p>Nuestro CSS usa <code>position: absolute</code> + <code>width: 100%</code> + <code>height: 100%</code> + <code>object-fit: cover</code> para la imagen. En el WebKit de iOS, cuando una imagen tiene <code>width: 100%</code> y <code>height: 100%</code> dentro de un contenedor cuya altura depende del contenido (no tiene altura fija), el cálculo de <code>height: 100%</code> puede resolver al tamaño intrínseco de la imagen en vez de al contenedor. El resultado es que la imagen no crece lo suficiente en vertical.</p>
+
+        <h4>¿Cómo se corrige?</h4>
+        <p>En vez de decirle a la imagen "sé del 100% del contenedor", le decimos "sé <strong>al menos</strong> del 100%". Con <code>min-width: 100%</code> y <code>min-height: 100%</code> la imagen siempre cubre todo el espacio, y <code>object-fit: cover</code> recorta lo que sobra.</p>
+        <pre><code>@supports (-webkit-touch-callout: none) {
+  .ct-banner-bg,
+  .ct-week-banner-bg,
+  .ct-access-card-bg {
+    min-width: 100%;
+    min-height: 100%;
+    object-fit: cover;
+  }
+}</code></pre>
+        <p><strong>Afecta a:</strong> Banner de página de inicio, banner semanal, tarjetas de acceso (Open class, Biblioteca, etc.).</p>
+        <p><strong>No afecta a:</strong> Android ni desktop — las reglas están dentro del <code>@supports</code>.</p>
+
+        <h3>Problema 2: Contenido pegado a los bordes laterales</h3>
+
+        <h4>¿Qué pasa?</h4>
+        <p>Todo el contenido de las páginas del curso aparece pegado a los bordes izquierdo y derecho de la pantalla del iPhone. No hay espacio de respiro entre el contenido y el borde de la pantalla.</p>
+
+        <h4>¿Por qué pasa?</h4>
+        <p>La app Canvas en iOS agrega un padding propio al contenedor de la página (~16px), pero este valor puede variar entre modelos de iPhone y versiones de la app. Nuestro CSS base solo tiene <code>margin: 0 0 var(--ct-space-xl)</code> en <code>.ct-section</code> — es decir, margen solo abajo, cero a los lados. Si el padding de la app no es suficiente, el contenido toca los bordes.</p>
+
+        <h4>¿Cómo se corrige?</h4>
+        <p>Agregamos margen lateral a todas las secciones, pero <strong>solo en iOS</strong> para no alterar el espaciado que ya funciona bien en Android.</p>
+        <pre><code>@supports (-webkit-touch-callout: none) {
+  .ct-section {
+    margin-left: var(--ct-space-sm);
+    margin-right: var(--ct-space-sm);
+  }
+}</code></pre>
+        <p><strong>Afecta a:</strong> Todas las secciones (<code>.ct-section</code>) en iOS.</p>
+        <p><strong>No afecta a:</strong> Android ni desktop.</p>
+
+        <h3>Problema 3: PDFs embebidos se muestran enormes y salen del contenedor</h3>
+
+        <h4>¿Qué pasa?</h4>
+        <p>Cuando un iframe carga un archivo PDF (por ejemplo, la Guía de la asignatura), en iOS el PDF se muestra muchísimo más grande que el contenedor que lo envuelve. Se desborda y rompe todo el layout de la página.</p>
+
+        <h4>¿Por qué pasa?</h4>
+        <p>Este es un <strong>comportamiento fundamental de iOS WebKit que no tiene solución CSS</strong>. Cuando Safari o WKWebView encuentran un PDF dentro de un iframe, no lo renderizan como un documento scrollable (como hace Chrome en Android/desktop). En su lugar, convierten la primera página del PDF en una <strong>imagen a resolución nativa</strong> y expanden el iframe para mostrar esa imagen completa, ignorando por completo las dimensiones del contenedor CSS (<code>width</code>, <code>height</code>, <code>aspect-ratio</code>, <code>overflow: hidden</code>, <code>position: absolute</code> — nada funciona).</p>
+        <p>En Android el problema es diferente: la app Canvas intercepta la URL del PDF y abre un visor nativo, así que el iframe ni siquiera se renderiza.</p>
+
+        <h4>¿Qué soluciones existen?</h4>
+        <div class="practice-card bad">
+          <h4><i class="fas fa-times-circle"></i> No funcionan (probadas y descartadas)</h4>
+          <ul>
+            <li><code>overflow: hidden</code> en el contenedor — recorta visualmente pero el iframe sigue expandiéndose y rompe el layout.</li>
+            <li><code>position: absolute</code> + <code>padding-bottom</code> (truco de aspect-ratio) — el iframe ignora estas restricciones para PDFs.</li>
+            <li><code>aspect-ratio: unset</code> + <code>height: 0</code> — mismo resultado, el PDF expande el iframe.</li>
+            <li>Cualquier combinación de CSS — <strong>no existe solución CSS para este problema</strong>.</li>
+            <li>Abrir en nueva pestaña (<code>target="_blank"</code>) — el dominio del repositorio de archivos tiene restricciones de acceso que impiden abrir el PDF directamente.</li>
+            <li>Google Docs Viewer / Office 365 Viewer — requieren que el PDF sea accesible públicamente sin autenticación. Nuestros PDFs están en dominios restringidos.</li>
+            <li>pdf.js (visor JavaScript) — Canvas no permite JavaScript en páginas wiki.</li>
+          </ul>
+        </div>
+
+        <div class="practice-card good">
+          <h4><i class="fas fa-check-circle"></i> Solución implementada: descarga automática en iOS</h4>
+          <ul>
+            <li>En iOS se <strong>oculta el iframe</strong> que carga el PDF y en su lugar se muestra un botón para <strong>descargar el archivo</strong> al dispositivo.</li>
+            <li>El usuario descarga el PDF y lo abre con el visor nativo de iOS (Archivos, iBooks, etc.).</li>
+            <li>Esto evita el problema de la restricción del dominio porque la descarga sí está permitida desde Canvas.</li>
+            <li>En desktop el iframe sigue funcionando normalmente con el PDF embebido.</li>
+          </ul>
+        </div>
+
+        <h4>¿Cómo se implementa?</h4>
+        <p><strong>Paso 1 — HTML:</strong> El iframe del PDF debe estar dentro de un contenedor <code>.ct-embed</code> que también incluya un <code>.ct-embed-fallback</code> con el botón de descarga:</p>
+        <pre><code>&lt;div class="ct-embed"&gt;
+  &lt;div class="ct-embed-viewer ct-ratio-4x3"&gt;
+    &lt;iframe src="url-del-archivo.pdf#view=FitH" title="..." loading="lazy" scrolling="auto"&gt;&lt;/iframe&gt;
+  &lt;/div&gt;
+  &lt;div class="ct-embed-fallback"&gt;
+    &lt;i class="bi bi-file-earmark-pdf" aria-hidden="true"&gt;&lt;/i&gt;
+    &lt;p&gt;Descarga el documento para consultarlo en tu dispositivo&lt;/p&gt;
+    &lt;a class="ct-btn ct-btn-primary" href="url-del-archivo.pdf" download&gt;Descargar documento&lt;/a&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+        <p><strong>Importante:</strong> El atributo <code>download</code> en el enlace fuerza la descarga en vez de intentar abrir el archivo en el navegador. La URL del <code>href</code> debe ser la misma del PDF sin parámetros de visualización (<code>#view=FitH</code>).</p>
+
+        <p><strong>Paso 2 — CSS:</strong> En el bloque iOS del <code>master.css</code>, detectamos automáticamente los iframes que cargan PDFs y mostramos el fallback:</p>
+        <pre><code>@supports (-webkit-touch-callout: none) {
+  /* Ocultar iframe solo si carga un PDF */
+  .ct-embed-viewer:has(iframe[src*=".pdf"]) {
+    display: none;
+  }
+  /* Mostrar fallback de descarga junto a iframe de PDF */
+  .ct-embed:has(iframe[src*=".pdf"]) .ct-embed-fallback {
+    display: flex;
+  }
+}</code></pre>
+        <p>El selector <code>iframe[src*=".pdf"]</code> detecta cualquier iframe cuya URL contenga <code>.pdf</code>. Esto significa que <strong>solo los PDFs se ocultan</strong> — los Genially, Rise, videos de Vimeo y cualquier otro recurso embebido que no sea PDF siguen funcionando normalmente.</p>
+
+        <h3>Bloque CSS completo obligatorio para cada proyecto</h3>
+        <p>Este bloque debe incluirse en <strong>todo</strong> archivo <code>master.css</code> de cada proyecto nuevo, justo después de la sección base (<code>.ct-section</code>). Copia y pega tal cual:</p>
+        <pre><code>/* ── Fix iOS: app Canvas (WKWebView) ── */
+@supports (-webkit-touch-callout: none) {
+  /* Espaciado lateral */
+  .ct-section {
+    margin-left: var(--ct-space-sm);
+    margin-right: var(--ct-space-sm);
+  }
+  /* Imágenes de fondo */
+  .ct-banner-bg,
+  .ct-week-banner-bg,
+  .ct-access-card-bg {
+    min-width: 100%;
+    min-height: 100%;
+    object-fit: cover;
+  }
+  /* PDFs: ocultar iframe y mostrar descarga */
+  .ct-embed-viewer:has(iframe[src*=".pdf"]) {
+    display: none;
+  }
+  .ct-embed:has(iframe[src*=".pdf"]) .ct-embed-fallback {
+    display: flex;
+  }
+}</code></pre>
+
+        <h3>Otras limitaciones a tener en cuenta</h3>
+        <ul class="docs-list">
+          <li><code>color-mix(in oklch, ...)</code> requiere <strong>iOS 16.2</strong> o superior. Los usuarios con iOS 16.0 o 16.1 verán todos los colores rotos porque las variables CSS no pueden resolverse. Considerar agregar valores hexadecimales de respaldo para los elementos más críticos (fondo, texto, botones).</li>
+          <li><code>background-attachment: fixed</code> <strong>nunca funciona en iOS</strong>. La imagen de fondo se redimensiona respecto a la página completa, no al contenedor. No usar en ningún proyecto.</li>
+          <li>Los selectores <code>:has(#left-side...)</code> que usamos para detectar si el menú lateral de Canvas está abierto o cerrado <strong>no sirven en la app móvil</strong> porque el elemento <code>#left-side</code> no existe en la app. Son código muerto en el CSS mobile — se pueden omitir.</li>
+          <li>La propiedad <code>inset: 0</code> (shorthand de <code>top/right/bottom/left</code>) funciona desde iOS 14.5, pero como buena práctica agregar <code>top: 0; right: 0; bottom: 0; left: 0;</code> antes como fallback.</li>
+          <li>No se puede emular iOS en Windows. <strong>Xcode (solo macOS)</strong> es la única herramienta que ofrece un emulador iOS real. En Windows, la única opción es BrowserStack (de pago con trial gratuito) o un dispositivo físico.</li>
+        </ul>
+
+        <h3>Flujo de pruebas recomendado</h3>
+        <ol class="docs-list">
+          <li>Desarrollar y previsualizar en el ambiente de desarrollo (desktop + simulador móvil integrado).</li>
+          <li>Compilar CSS con el botón de compilación.</li>
+          <li>Subir a Canvas: el CSS al Theme Editor y el HTML al editor de páginas.</li>
+          <li>Probar en un <strong>dispositivo Android</strong> (app Canvas Student o navegador).</li>
+          <li>Probar en un <strong>dispositivo iOS físico</strong> (iPhone o iPad con la app Canvas Student).</li>
+          <li>Si hay errores en iOS: aplicar la corrección <strong>dentro</strong> del bloque <code>@supports (-webkit-touch-callout: none)</code>.</li>
+          <li>Compilar nuevamente, subir y verificar que <strong>Android no se vio afectado</strong> por la corrección.</li>
+          <li>Repetir hasta que ambas plataformas se vean correctamente.</li>
+        </ol>
+
+        <h3>Referencia técnica</h3>
+        <ul class="docs-list">
+          <li><a href="https://github.com/scottjehl/Device-Bugs/issues/7" target="_blank">iOS iframe dimensions cannot be constrained — Device-Bugs #7</a></li>
+          <li><a href="https://discussions.apple.com/thread/250075244" target="_blank">iOS PDF in iframe is a mess — Apple Community</a></li>
+          <li><a href="https://developer.apple.com/forums/thread/649982" target="_blank">Embedded PDFs in mobile safari — Apple Developer Forums</a></li>
+          <li><a href="https://github.com/instructure/canvas-ios" target="_blank">Canvas iOS — GitHub (open source)</a></li>
+          <li><a href="https://bugs.webkit.org/show_bug.cgi?id=170595" target="_blank">WebKit Bug #170595 — WKWebView viewport issues</a></li>
+        </ul>
+      </section>
+
+      <!-- ════════════════════════════════════════ -->
+      <section id="dark-mode-web-canvas">
+        <h2><i class="fas fa-moon"></i> Dark mode en Canvas LMS Web</h2>
+
+        <div class="callout warning">
+          <i class="fas fa-exclamation-triangle"></i>
+          <div>
+            <strong>Caso reportado:</strong> Un usuario que ingresó al curso desde un navegador web vio los contenidos del curso en modo oscuro sin haber activado nada en Canvas. El resto de la interfaz de Canvas seguía en modo claro, generando una inconsistencia visual.
+          </div>
+        </div>
+
+        <h3>¿Por qué ocurre?</h3>
+        <p>Nuestro CSS incluye una regla <code>@media (prefers-color-scheme: dark)</code> que aplica estilos oscuros automáticamente cuando el <strong>sistema operativo del usuario</strong> tiene modo oscuro habilitado. Esto se activa a nivel del navegador y no puede desactivarse desde Canvas ni desde el CSS una vez la regla está presente.</p>
+        <p>Como Canvas LMS web <strong>no tiene soporte nativo para dark mode</strong>, el resultado es una página donde:</p>
+        <ul class="docs-list">
+          <li>Los contenidos del curso (nuestro CSS) se ven en modo oscuro.</li>
+          <li>La interfaz de Canvas (barra superior, menú lateral, gradebook, editor RCE, LTI) se mantiene en modo claro.</li>
+          <li>Los recursos embebidos (imágenes, iframes, LTI) muchas veces no respetan el modo oscuro.</li>
+        </ul>
+
+        <h3>¿Es un error de Canvas?</h3>
+        <p>No. Canvas simplemente <strong>no contempla dark mode en su versión web</strong> — solo ofrece un toggle de <em>alto contraste</em> en la configuración de usuario (que no es dark mode, es un contraste aumentado en modo claro). Instructure ha recibido solicitudes de dark mode desde hace años y no lo ha implementado.</p>
+
+        <h3>¿Es un error de nuestro CSS?</h3>
+        <p>Tampoco. Nuestra regla <code>@media (prefers-color-scheme: dark)</code> funciona como debe: respeta la preferencia del sistema operativo del usuario. El problema es que esta preferencia aplica <strong>solo a nuestro CSS</strong>, no a la interfaz de Canvas que lo rodea.</p>
+
+        <h3>Solución implementada</h3>
+        <div class="callout info">
+          <i class="fas fa-info-circle"></i>
+          <div>
+            <strong>Desactivamos el dark mode automático solo en desktop</strong>, manteniéndolo en móvil. Esto se logra aprovechando que Canvas Theme Editor tiene dos slots de CSS (uno para desktop y otro para móvil/app).
+          </div>
+        </div>
+
+        <h4>¿Cómo funciona?</h4>
+        <ul class="docs-list">
+          <li><strong>Desktop:</strong> el compilador elimina automáticamente el bloque <code>@media (prefers-color-scheme: dark)</code> del archivo <code>slug-desktop.css</code>. Los usuarios en navegador de escritorio nunca verán dark mode automático, manteniendo consistencia con la interfaz clara de Canvas.</li>
+          <li><strong>Móvil / App:</strong> el archivo <code>slug-mobile.css</code> conserva el bloque <code>@media (prefers-color-scheme: dark)</code>. Los usuarios en móvil o en la app Canvas Student ven dark mode cuando su sistema operativo lo tiene habilitado, coherente con el resto de apps del dispositivo.</li>
+          <li><strong>Ambiente de desarrollo:</strong> sigue disponible el toggle manual (<code>html[data-theme="dark"]</code>) para previsualizar dark mode durante el desarrollo.</li>
+        </ul>
+
+        <h4>Implementación técnica</h4>
+        <p>El compilador (<code>env/api/compile-css-fn.php</code>) fue actualizado con dos regex adicionales que eliminan el bloque <code>@media (prefers-color-scheme: dark)</code> únicamente al generar el archivo desktop:</p>
+        <pre><code>// Eliminar comentario + bloque @media (prefers-color-scheme: dark)
+$desktop = preg_replace(
+    '!/\*[═\s]*DARK MODE\s*—\s*Canvas real[^*]*\*/\s*@media\s*\(\s*prefers-color-scheme\s*:\s*dark\s*\)\s*\{(?:[^{}]*|\{[^{}]*\})*\}\s*!s',
+    '',
+    $desktop
+);
+// Fallback sin comentario
+$desktop = preg_replace(
+    '/@media\s*\(\s*prefers-color-scheme\s*:\s*dark\s*\)\s*\{(?:[^{}]*|\{[^{}]*\})*\}\s*/s',
+    '',
+    $desktop
+);</code></pre>
+
+        <h4>Verificación</h4>
+        <p>Probado en Windows 11 con dark mode del sistema activado:</p>
+        <ul class="docs-list">
+          <li>Navegador de escritorio → contenido del curso en modo claro (correcto, consistente con Canvas).</li>
+          <li>App móvil iOS/Android con dark mode en el dispositivo → contenido del curso en modo oscuro.</li>
+          <li>App móvil con modo claro en el dispositivo → contenido del curso en modo claro.</li>
+        </ul>
+
+        <h3>Opciones alternativas descartadas</h3>
+        <div class="practice-card bad">
+          <h4><i class="fas fa-times-circle"></i> Mantener dark mode automático también en desktop</h4>
+          <ul>
+            <li>Fue el estado original hasta que se reportó el caso.</li>
+            <li>Genera inconsistencia visual entre el contenido del curso (oscuro) y la interfaz de Canvas (clara).</li>
+          </ul>
+        </div>
+
+        <div class="practice-card bad">
+          <h4><i class="fas fa-times-circle"></i> Dark mode opt-in con toggle</h4>
+          <ul>
+            <li>Requiere JavaScript en Canvas que actualmente no usamos en páginas wiki.</li>
+            <li>Canvas no permite JavaScript inline en páginas wiki.</li>
+            <li>Tendría que subirse como JS personalizado en el Theme Editor a nivel de cuenta.</li>
+          </ul>
+        </div>
+
+        <h3>Fuentes de referencia</h3>
+
+        <h4>Sobre la falta de dark mode nativo en Canvas web</h4>
+        <ul class="docs-list">
+          <li><a href="https://community.canvaslms.com/t5/Canvas-Question-Forum/Is-there-a-dark-mode-on-Canvas/m-p/202297" target="_blank">Instructure Community — "Is there a dark mode on Canvas?"</a> (hilo oficial pidiendo dark mode web).</li>
+          <li><a href="https://community.canvaslms.com/t5/Canvas-Ideas/Theme-Editor-Dark-Theme-Dark-Mode-for-Canvas/idi-p/364079" target="_blank">Canvas Ideas — "Theme Editor Dark Theme/Dark Mode for Canvas"</a> (idea oficial pendiente).</li>
+          <li><a href="https://community.instructure.com/en/discussion/635391/dark-mode-dark-theme-feature-for-canvas-lms-through-web-browser/p1" target="_blank">Instructure Community — "Dark mode feature through web browser"</a> (discusión reciente 2024).</li>
+          <li><a href="https://community.canvaslms.com/t5/Canvas-Basics-Guide/How-do-I-enable-the-high-contrast-user-interface-in-Canvas/ta-p/615334" target="_blank">Canvas Guide — "How do I enable the high contrast UI"</a> (única opción oficial relacionada).</li>
+        </ul>
+
+        <h4>Sobre cómo funciona <code>prefers-color-scheme</code></h4>
+        <ul class="docs-list">
+          <li><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-color-scheme" target="_blank">MDN Web Docs (Mozilla) — Documentación oficial de <code>prefers-color-scheme</code></a>.</li>
+          <li><a href="https://web.dev/articles/color-scheme" target="_blank">web.dev (Google) — "Improve dark mode default with color-scheme"</a>.</li>
+        </ul>
+
+        <h4>Sobre soluciones de terceros (demuestra que no es funcionalidad nativa)</h4>
+        <ul class="docs-list">
+          <li><a href="https://github.com/ThatsJustCheesy/Canvas-Dark" target="_blank">Canvas-Dark en GitHub</a> — Extensión no oficial que agrega dark mode a Canvas.</li>
+          <li><a href="https://www.coursicle.com/blog/canvas-dark-mode/" target="_blank">Coursicle blog — "Canvas Dark Mode"</a> (descripción de las extensiones de navegador disponibles).</li>
+        </ul>
+
+        <h3>Resumen ejecutivo</h3>
+        <p>Canvas LMS web no tiene soporte nativo para dark mode — solo ofrecen un modo de alto contraste (confirmado por la comunidad oficial de Instructure). Las soluciones existentes son extensiones de navegador creadas por terceros, no funcionalidad oficial (documentación de MDN y web.dev). La regla CSS <code>@media (prefers-color-scheme: dark)</code> que usamos se activa automáticamente con la preferencia del sistema operativo del usuario y no puede suprimirse desde Canvas sin agregar JavaScript personalizado a nivel de cuenta.</p>
       </section>
 
     </main>
